@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Navbar as HeroUINavbar,
   NavbarContent,
@@ -6,11 +8,12 @@ import { ThemeSwitch } from "@/src/components/theme-switch";
 
 export const Navbar = () => {
 
-
   return (
-    <HeroUINavbar maxWidth="xl" position="sticky">
-      <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
-        <ThemeSwitch />
+    <HeroUINavbar maxWidth="xl" position="sticky" >
+      <NavbarContent className="outline" justify="end">
+        <div>
+          <ThemeSwitch />
+        </div>
       </NavbarContent>
 
     </HeroUINavbar>

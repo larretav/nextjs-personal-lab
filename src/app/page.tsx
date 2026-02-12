@@ -1,7 +1,10 @@
 import React from 'react'
 
-export const HomePage = () => {
+
+export default function HomePage() {
   return (
-    <div>HomePage</div>
-  )
+    <div className="bg-red-400">
+      <h1>Hello Page</h1>
+    </div>
+  );
 }
