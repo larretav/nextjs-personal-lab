@@ -6,11 +6,11 @@ import clsx from "clsx";
 import { Providers } from "./providers";
 
 import { fontSans } from "@/src/config/fonts";
-import { Navbar } from "@/src/components/navbar";
+// import { Navbar } from "@/src/components/navbar";
 
 export const metadata: Metadata = {
   title: {
-    default: "Ideas",
+    default: "Personal Lab",
     template: `%s - Home`,
   },
   description: "Página principal de mini proyectos diferentes",
@@ -42,9 +42,7 @@ export default function RootLayout({
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
           <div className="relative flex flex-col h-screen">
-            <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow ">
-              {children}
-            </main>
+            {children}
           </div>
         </Providers>
       </body>

@@ -70,7 +70,7 @@ export function ValentineInvitation() {
           </p>
           <Button 
             onPress={() => setResponse(null)}
-            className="bg-rose-500 hover:bg-rose-500/90 text-rose-500-foreground"
+            className="bg-rose-500 hover:bg-rose-500/90  text-white"
           >
             Déjame reconsiderarlo
           </Button>
@@ -81,7 +81,7 @@ export function ValentineInvitation() {
 
   return (
     <Card className="max-w-lg mx-auto bg-card/80 backdrop-blur-sm border-rose-500/20 shadow-2xl overflow-hidden">
-      <CardBody className="p-8 md:p-12">
+      <CardBody className="p-8 md:p-12 overflow-hidden">
         {!isRevealed ? (
           <div className="text-center">
             <div className="w-24 h-24 md:w-32 md:h-32 mx-auto mb-6 relative">
@@ -103,9 +103,9 @@ export function ValentineInvitation() {
               Alguien muy especial tiene algo que decirte
             </p>
             <Button 
-              onClick={() => setIsRevealed(true)}
+              onPress={() => setIsRevealed(true)}
               size="lg"
-              className="bg-rose-500 hover:bg-rose-500/90 text-rose-500-foreground px-8 py-6 text-lg"
+              className="bg-rose-500 hover:bg-rose-500/90 text-white px-8 py-6 text-lg"
             >
               Abrir mensaje
             </Button>
@@ -127,9 +127,9 @@ export function ValentineInvitation() {
             </p>
             <div ref={containerRef} className="flex flex-col sm:flex-row gap-4 justify-center items-center min-h-[120px] relative">
               <Button 
-                onClick={() => setResponse("yes")}
+                onPress={() => setResponse("yes")}
                 size="lg"
-                className="bg-rose-500 hover:bg-rose-500/90 text-rose-500-foreground px-8 py-6 text-lg z-10"
+                className="bg-rose-500 hover:bg-rose-500/90 text-white px-8 py-6 text-lg z-10"
               >
                 ¡Sí, acepto! 💖
               </Button>
