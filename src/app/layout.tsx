@@ -45,8 +45,6 @@ export default function RootLayout({
             <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow ">
               {children}
             </main>
-
-            <Navbar />
           </div>
         </Providers>
       </body>
