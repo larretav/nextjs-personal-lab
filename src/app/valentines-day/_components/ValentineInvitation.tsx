@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useCallback } from "react"
-import { Button ,Card, CardBody } from "@heroui/react"
+import { Button, Card, CardBody, Image } from "@heroui/react"
 
 export function ValentineInvitation() {
   const [isRevealed, setIsRevealed] = useState(false)
@@ -15,43 +15,56 @@ export function ValentineInvitation() {
 
     const container = containerRef.current.getBoundingClientRect()
     const button = noButtonRef.current.getBoundingClientRect()
-    
+
     const maxX = container.width - button.width - 40
     const maxY = 150
-    
+
     // Generate position that's at least 100px away from current position
     let newX: number
     let newY: number
-    
+
     do {
       newX = (Math.random() - 0.5) * maxX
       newY = (Math.random() - 0.5) * maxY
     } while (
-      Math.abs(newX - noButtonPosition.x) < 100 && 
+      Math.abs(newX - noButtonPosition.x) < 100 &&
       Math.abs(newY - noButtonPosition.y) < 50
     )
-    
+
     setNoButtonPosition({ x: newX, y: newY })
   }, [noButtonPosition.x, noButtonPosition.y])
 
   if (response === "yes") {
     return (
-      <Card className="max-w-lg mx-auto bg-card/80 backdrop-blur-sm border-rose-500/20 shadow-2xl">
+      <Card className="max-w-lg mx-auto bg-content1/10 backdrop-blur-sm border border-rose-500/20 shadow-2xl rounded-2xl">
         <CardBody className="p-8 md:p-12 text-center">
-          <div className="text-6xl md:text-8xl mb-6 animate-bounce">💖</div>
           <h2 className="text-3xl md:text-4xl font-bold text-rose-500 mb-4" style={{ fontFamily: 'var(--font-playfair)' }}>
-            ¡Sabía que dirías que sí!
+            ¡Siiiii, vamos por tacoos!
           </h2>
-          <p className="text-lg text-muted-foreground mb-6" style={{ fontFamily: 'var(--font-lora)' }}>
-            Este será el mejor San Valentín de nuestras vidas. No puedo esperar para estar contigo.
-          </p>
-          <div className="flex justify-center gap-2 flex-wrap">
-            {["💕", "💗", "💖", "💝", "💘"].map((emoji, i) => (
-              <span key={i} className="text-3xl animate-pulse" style={{ animationDelay: `${i * 0.1}s` }}>
-                {emoji}
-              </span>
-            ))}
+          <Image
+            width="270" height="480"
+            src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExNmE2eWx3dmdiZ3F2Ymw1NTRwbDh5dnVnZzdsb3A3dm8wODY0aHNsZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3rgXBxX4myufzT6N2w/giphy.gif"
+            alt="Perrito triste"
+            className="mx-auto rounded-2xl mb-8"
+          />
+          <div className="inline-flex space-x-4 mx-auto">
+
+            <Image
+              width="170" height="380"
+              src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExcWprd3cwcDAwMjk2a2Y0YWg3OHc0MTdncXhtdmk1NWNmczVwbThndyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ppSjX2iP9Ec1ExJRsV/giphy.gif"
+              alt="Perrito triste"
+              className="mx-auto rounded-2xl mb-8"
+            />
+            <Image
+              width="170" height="380"
+              src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExc2h3MWg4ejg1bjM0MzNkMzRtaThxb2U4NnA2NDlqNnF2YXo3Z3RqdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/gXXFrjHFJIMoqKr8UT/giphy.gif"
+              alt="Perrito triste"
+              className="mx-auto rounded-2xl mb-8"
+            />
           </div>
+          <p className="text-lg text-muted-foreground mb-6" style={{ fontFamily: 'var(--font-lora)' }}>
+            Prometo no darte mucha pena ajena jaja ❤️
+          </p>
         </CardBody>
       </Card>
     )
@@ -59,20 +72,25 @@ export function ValentineInvitation() {
 
   if (response === "no") {
     return (
-      <Card className="max-w-lg mx-auto bg-card/80 backdrop-blur-sm border-rose-500/20 shadow-2xl">
-        <CardBody className="p-8 md:p-12 text-center">
-          <div className="text-6xl md:text-8xl mb-6">🥺</div>
+      <Card className="max-w-lg mx-auto bg-content1/10 backdrop-blur-sm border border-rose-500/20 shadow-2xl rounded-2xl">
+        <CardBody className="p-8 md:p-12 text-center space-y-3">
           <h2 className="text-3xl md:text-4xl font-bold text-rose-500 mb-4" style={{ fontFamily: 'var(--font-playfair)' }}>
             ¿Estás seguro/a?
           </h2>
-          <p className="text-lg text-muted-foreground mb-6" style={{ fontFamily: 'var(--font-lora)' }}>
-            Tal vez quieras pensarlo de nuevo...
+          <Image
+            width="170" height="380"
+            src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbTVqemg0dXB1c2FhNXh2MXpzdDBzMWg3Zzc3a3d5MXJuNDJvM3N5ZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/XgB1iZOFFkUXbOhNXt/giphy.gif"
+            alt="Perrito triste"
+            className="mx-auto rounded-2xl"
+          />
+          <p className="text-normal text-foreground-600 mb-6" style={{ fontFamily: 'var(--font-lora)' }}>
+            Piénsalo de nuevo porfa... te pago :c
           </p>
-          <Button 
+          <Button
             onPress={() => setResponse(null)}
             className="bg-rose-500 hover:bg-rose-500/90  text-white"
           >
-            Déjame reconsiderarlo
+            Bueno, vamos de nuevo
           </Button>
         </CardBody>
       </Card>
@@ -80,7 +98,7 @@ export function ValentineInvitation() {
   }
 
   return (
-    <Card className="max-w-lg mx-auto bg-card/80 backdrop-blur-sm border-rose-500/20 shadow-2xl overflow-hidden">
+    <Card className="max-w-lg mx-auto bg-content1/10 backdrop-blur-sm border border-rose-500/20 shadow-2xl rounded-2xl overflow-hidden">
       <CardBody className="p-8 md:p-12 overflow-hidden">
         {!isRevealed ? (
           <div className="text-center">
@@ -99,10 +117,7 @@ export function ValentineInvitation() {
             <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4" style={{ fontFamily: 'var(--font-playfair)' }}>
               Tienes un mensaje especial...
             </h2>
-            <p className="text-muted-foreground mb-8" style={{ fontFamily: 'var(--font-lora)' }}>
-              Alguien muy especial tiene algo que decirte
-            </p>
-            <Button 
+            <Button
               onPress={() => setIsRevealed(true)}
               size="lg"
               className="bg-rose-500 hover:bg-rose-500/90 text-white px-8 py-6 text-lg"
@@ -112,28 +127,28 @@ export function ValentineInvitation() {
           </div>
         ) : (
           <div className="text-center animate-fadeIn">
-            <p className="text-sm uppercase tracking-widest text-muted-foreground mb-4">
-              14 de Febrero
-            </p>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6" style={{ fontFamily: 'var(--font-playfair)' }}>
-              ¿Quieres pasar San Valentín conmigo?
+              ¿Quieres ser mi San Valentín?
             </h2>
             <div className="w-20 h-0.5 bg-rose-500/40 mx-auto mb-6" />
-            <p className="text-lg text-muted-foreground mb-8 leading-relaxed" style={{ fontFamily: 'var(--font-lora)' }}>
-              Este día tan especial no sería lo mismo sin ti. Me encantaría compartir momentos únicos, risas y crear recuerdos inolvidables juntos.
+            <p className="text-lg text-foreground text-left" style={{ fontFamily: 'var(--font-lora)' }}>
+              Sin ti, mi vida sería como un taco sin salsa
             </p>
-            <p className="text-muted-foreground italic mb-8" style={{ fontFamily: 'var(--font-lora)' }}>
-              "Eres la razón por la que creo en el amor..."
+            <p className="text-lg text-foreground text-left" style={{ fontFamily: 'var(--font-lora)' }}>
+              En ocaciones te miro y digo: "Wow, jicamas con chile ❤️"
+            </p>
+            <p className="text-muted-foreground italic my-8" style={{ fontFamily: 'var(--font-lora)' }}>
+              "Te deseo más que a la Reforma Laboral de 40 horas ..."
             </p>
             <div ref={containerRef} className="flex flex-col sm:flex-row gap-4 justify-center items-center min-h-[120px] relative">
-              <Button 
+              <Button
                 onPress={() => setResponse("yes")}
                 size="lg"
                 className="bg-rose-500 hover:bg-rose-500/90 text-white px-8 py-6 text-lg z-10"
               >
-                ¡Sí, acepto! 💖
+                ¡Sí, a todo! 💖
               </Button>
-              <Button 
+              <Button
                 ref={noButtonRef}
                 onPress={() => setResponse("no")}
                 onMouseEnter={handleNoButtonHover}
@@ -144,9 +159,10 @@ export function ValentineInvitation() {
                   transform: `translate(${noButtonPosition.x}px, ${noButtonPosition.y}px)`,
                 }}
               >
-                No
+                No, a la vuelta
               </Button>
             </div>
+            <p className="text-small text-foreground-500">El botón "No" es algo nervioso</p>
           </div>
         )}
       </CardBody>

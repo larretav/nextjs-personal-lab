@@ -5,7 +5,7 @@ import clsx from "clsx";
 
 import { Providers } from "./providers";
 
-import { fontSans } from "@/src/config/fonts";
+import { fontSans, lora, playfair } from "@/src/config/fonts";
 // import { Navbar } from "@/src/components/navbar";
 
 export const metadata: Metadata = {
@@ -38,6 +38,8 @@ export default function RootLayout({
         className={clsx(
           "min-h-screen text-foreground bg-background font-sans antialiased",
           fontSans.variable,
+          playfair.variable,
+          lora.variable
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>

@@ -9,7 +9,7 @@ import { ThemeSwitch } from "@/src/components/theme-switch";
 export const Navbar = () => {
 
   return (
-    <HeroUINavbar  maxWidth="xl" position="sticky" className="bg-red-300">
+    <HeroUINavbar  maxWidth="xl" position="sticky" >
       
       <NavbarContent justify="end">
         <ThemeSwitch />

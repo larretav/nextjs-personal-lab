@@ -23,7 +23,7 @@ export default function ValentinesDayPage() {
             Una invitación especial
           </p>
           <h1
-            className="text-5xl md:text-7xl lg:text-8xl font-bold text-foreground mb-4 text-balance"
+            className="text-5xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 text-balance"
             style={{ fontFamily: 'var(--font-playfair)' }}
           >
             San Valentín
@@ -47,7 +47,7 @@ export default function ValentinesDayPage() {
         {/* Footer Decoration */}
         <div className="mt-12 text-center">
           <p className="text-sm text-muted-foreground" style={{ fontFamily: 'var(--font-lora)' }}>
-            Hecho con amor para ti
+            Hecho con amor (y un poco de Vibe Coding) para ti ☺️
           </p>
           <div className="flex justify-center gap-2 mt-4">
             <svg className="w-4 h-4 text-rose-500/60" viewBox="0 0 24 24" fill="currentColor">
