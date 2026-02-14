@@ -5,12 +5,12 @@ import clsx from "clsx";
 
 import { Providers } from "./providers";
 
-import { fontSans } from "@/src/config/fonts";
-import { Navbar } from "@/src/components/navbar";
+import { fontSans, lora, playfair } from "@/src/config/fonts";
+// import { Navbar } from "@/src/components/navbar";
 
 export const metadata: Metadata = {
   title: {
-    default: "Ideas",
+    default: "Personal Lab",
     template: `%s - Home`,
   },
   description: "Página principal de mini proyectos diferentes",
@@ -32,21 +32,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html suppressHydrationWarning lang="en">
+    <html suppressHydrationWarning lang="es">
       <head />
       <body
         className={clsx(
           "min-h-screen text-foreground bg-background font-sans antialiased",
           fontSans.variable,
+          playfair.variable,
+          lora.variable
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
           <div className="relative flex flex-col h-screen">
-            <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow ">
-              {children}
-            </main>
-
-            <Navbar />
+            {children}
           </div>
         </Providers>
       </body>

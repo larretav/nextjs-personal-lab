@@ -1,10 +1,14 @@
+'use client';
+import { Button } from '@heroui/react';
 import React from 'react'
+import { Navbar } from '../components/navbar';
 
 
 export default function HomePage() {
   return (
-    <div className="bg-red-400">
-      <h1>Hello Page</h1>
+    <div className="relative">
+      <Navbar />
+      <h1></h1>
     </div>
   );
 }
