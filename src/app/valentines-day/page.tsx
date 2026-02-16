@@ -16,7 +16,7 @@ export default function ValentinesDayPage() {
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 container mx-auto px-4 py-12 md:py-20 flex flex-col items-center justify-center min-h-screen">
+      <div className="relative z-10 container mx-auto sm:px-4 py-12 md:py-20 flex flex-col items-center justify-center min-h-screen">
         {/* Header */}
         <div className="text-center mb-12">
           <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground mb-4">
@@ -42,10 +42,12 @@ export default function ValentinesDayPage() {
         </div>
 
         {/* Invitation Card */}
-        <ValentineInvitation />
+        <div className="px-4">
+          <ValentineInvitation />
+        </div>
 
         {/* Footer Decoration */}
-        <div className="mt-12 text-center">
+        <div className="mt-12 text-center px-6">
           <p className="text-sm text-muted-foreground" style={{ fontFamily: 'var(--font-lora)' }}>
             Hecho con amor (y un poco de Vibe Coding) para ti ☺️
           </p>

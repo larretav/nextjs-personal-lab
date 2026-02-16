@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function ValentinesDayLayout({ children }: { children: React.ReactNode }) {
   return (
-    <main className="container mx-auto max-w-7xl px-6 flex-grow valentines-light">
+    <main className="container mx-auto max-w-7xl flex-grow valentines-light">
       {children}
       <ForceTheme to="light" />
     </main>

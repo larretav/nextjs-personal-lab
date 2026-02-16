@@ -9,6 +9,7 @@ export function ValentineInvitation() {
   const [noButtonPosition, setNoButtonPosition] = useState({ x: 0, y: 0 })
   const containerRef = useRef<HTMLDivElement>(null)
   const noButtonRef = useRef<HTMLButtonElement>(null)
+  const [attemps, setAttemps] = useState(10);
 
   const handleNoButtonHover = useCallback(() => {
     if (!containerRef.current || !noButtonRef.current) return
@@ -16,10 +17,10 @@ export function ValentineInvitation() {
     const container = containerRef.current.getBoundingClientRect()
     const button = noButtonRef.current.getBoundingClientRect()
 
-    const maxX = container.width - button.width - 40
+    const maxX = container.width - button.width - 70
     const maxY = 150
 
-    // Generate position that's at least 100px away from current position
+    // Generar posición que esté a lo menos 100px de la posición actual
     let newX: number
     let newY: number
 
@@ -27,7 +28,7 @@ export function ValentineInvitation() {
       newX = (Math.random() - 0.5) * maxX
       newY = (Math.random() - 0.5) * maxY
     } while (
-      Math.abs(newX - noButtonPosition.x) < 100 &&
+      Math.abs(newX - noButtonPosition.x) < 150 &&
       Math.abs(newY - noButtonPosition.y) < 50
     )
 
@@ -36,7 +37,7 @@ export function ValentineInvitation() {
 
   if (response === "yes") {
     return (
-      <Card className="max-w-lg mx-auto bg-content1/10 backdrop-blur-sm border border-rose-500/20 shadow-2xl rounded-2xl">
+      <Card className=" mx-auto bg-content1/10 backdrop-blur-sm border border-rose-500/20 shadow-2xl rounded-2xl">
         <CardBody className="p-8 md:p-12 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-rose-500 mb-4" style={{ fontFamily: 'var(--font-playfair)' }}>
             ¡Siiiii, vamos por tacoos!
@@ -87,7 +88,11 @@ export function ValentineInvitation() {
             Piénsalo de nuevo porfa... te pago :c
           </p>
           <Button
-            onPress={() => setResponse(null)}
+            onPress={() => {
+              setResponse(null)
+              setAttemps(10);
+              setNoButtonPosition({ x: 0, y: 0 });
+            }}
             className="bg-rose-500 hover:bg-rose-500/90  text-white"
           >
             Bueno, vamos de nuevo
@@ -150,7 +155,13 @@ export function ValentineInvitation() {
               </Button>
               <Button
                 ref={noButtonRef}
-                onPress={() => setResponse("no")}
+                onPress={() => {
+                  setAttemps(attemps - 1);
+                  if (attemps <= 0)
+                    setResponse("no")
+                  else
+                    handleNoButtonHover();
+                }}
                 onMouseEnter={handleNoButtonHover}
                 variant="bordered"
                 size="lg"
