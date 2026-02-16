@@ -37,7 +37,7 @@ export function ValentineInvitation() {
 
   if (response === "yes") {
     return (
-      <Card className=" mx-auto bg-content1/10 backdrop-blur-sm border border-rose-500/20 shadow-2xl rounded-2xl">
+      <Card className="max-w-lg mx-auto bg-content1/10 backdrop-blur-sm border border-rose-500/20 shadow-2xl rounded-2xl">
         <CardBody className="p-8 md:p-12 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-rose-500 mb-4" style={{ fontFamily: 'var(--font-playfair)' }}>
             ¡Siiiii, vamos por tacoos!
