@@ -42,7 +42,7 @@ export default function RootLayout({
           lora.variable
         )}
       >
-        <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
+        <Providers themeProps={{ attribute: "data-theme", defaultTheme: "dark" }}>
           <div className="relative flex flex-col h-screen">
             {children}
           </div>

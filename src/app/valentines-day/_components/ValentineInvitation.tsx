@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useCallback } from "react"
-import { Button, Card, CardBody, Image } from "@heroui/react"
+import { Button, Card } from "@heroui/react"
 
 export function ValentineInvitation() {
   const [isRevealed, setIsRevealed] = useState(false)
@@ -37,12 +37,12 @@ export function ValentineInvitation() {
 
   if (response === "yes") {
     return (
-      <Card className="max-w-lg mx-auto bg-content1/10 backdrop-blur-sm border border-rose-500/20 shadow-2xl rounded-2xl">
-        <CardBody className="p-8 md:p-12 text-center">
+      <Card className="max-w-lg mx-auto bg-surface/10 backdrop-blur-sm border border-rose-500/20 shadow-2xl rounded-2xl">
+        <Card.Content className="p-8 md:p-12 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-rose-500 mb-4" style={{ fontFamily: 'var(--font-playfair)' }}>
             ¡Siiiii, vamos por tacoos!
           </h2>
-          <Image
+          <img
             width="270" height="480"
             src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExNmE2eWx3dmdiZ3F2Ymw1NTRwbDh5dnVnZzdsb3A3dm8wODY0aHNsZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3rgXBxX4myufzT6N2w/giphy.gif"
             alt="Perrito triste"
@@ -50,13 +50,13 @@ export function ValentineInvitation() {
           />
           <div className="inline-flex space-x-4 mx-auto">
 
-            <Image
+            <img
               width="170" height="380"
               src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExcWprd3cwcDAwMjk2a2Y0YWg3OHc0MTdncXhtdmk1NWNmczVwbThndyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ppSjX2iP9Ec1ExJRsV/giphy.gif"
               alt="Perrito triste"
               className="mx-auto rounded-2xl mb-8"
             />
-            <Image
+            <img
               width="170" height="380"
               src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExc2h3MWg4ejg1bjM0MzNkMzRtaThxb2U4NnA2NDlqNnF2YXo3Z3RqdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/gXXFrjHFJIMoqKr8UT/giphy.gif"
               alt="Perrito triste"
@@ -66,25 +66,25 @@ export function ValentineInvitation() {
           <p className="text-lg text-muted-foreground mb-6" style={{ fontFamily: 'var(--font-lora)' }}>
             Prometo no darte mucha pena ajena jaja ❤️
           </p>
-        </CardBody>
+        </Card.Content>
       </Card>
     )
   }
 
   if (response === "no") {
     return (
-      <Card className="max-w-lg mx-auto bg-content1/10 backdrop-blur-sm border border-rose-500/20 shadow-2xl rounded-2xl">
-        <CardBody className="p-8 md:p-12 text-center space-y-3">
+      <Card className="max-w-lg mx-auto bg-surface/10 backdrop-blur-sm border border-rose-500/20 shadow-2xl rounded-2xl">
+        <Card.Content className="p-8 md:p-12 text-center space-y-3">
           <h2 className="text-3xl md:text-4xl font-bold text-rose-500 mb-4" style={{ fontFamily: 'var(--font-playfair)' }}>
             ¿Estás seguro/a?
           </h2>
-          <Image
+          <img
             width="170" height="380"
             src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbTVqemg0dXB1c2FhNXh2MXpzdDBzMWg3Zzc3a3d5MXJuNDJvM3N5ZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/XgB1iZOFFkUXbOhNXt/giphy.gif"
             alt="Perrito triste"
             className="mx-auto rounded-2xl"
           />
-          <p className="text-normal text-foreground-600 mb-6" style={{ fontFamily: 'var(--font-lora)' }}>
+          <p className="text-normal text-muted mb-6" style={{ fontFamily: 'var(--font-lora)' }}>
             Piénsalo de nuevo porfa... te pago :c
           </p>
           <Button
@@ -97,14 +97,14 @@ export function ValentineInvitation() {
           >
             Bueno, vamos de nuevo
           </Button>
-        </CardBody>
+        </Card.Content>
       </Card>
     )
   }
 
   return (
-    <Card className="max-w-lg mx-auto bg-content1/10 backdrop-blur-sm border border-rose-500/20 shadow-2xl rounded-2xl overflow-hidden">
-      <CardBody className="p-8 md:p-12 overflow-hidden">
+    <Card className="max-w-lg mx-auto bg-surface/10 backdrop-blur-sm border border-rose-500/20 shadow-2xl rounded-2xl overflow-hidden">
+      <Card.Content className="p-8 md:p-12 overflow-hidden">
         {!isRevealed ? (
           <div className="text-center">
             <div className="w-24 h-24 md:w-32 md:h-32 mx-auto mb-6 relative">
@@ -163,7 +163,7 @@ export function ValentineInvitation() {
                     handleNoButtonHover();
                 }}
                 onMouseEnter={handleNoButtonHover}
-                variant="bordered"
+                variant="outline"
                 size="lg"
                 className="border-rose-500/30 text-foreground hover:bg-rose-500/10 px-8 py-6 text-lg bg-transparent transition-transform duration-150 ease-out"
                 style={{
@@ -173,10 +173,10 @@ export function ValentineInvitation() {
                 No, a la vuelta
               </Button>
             </div>
-            <p className="text-small text-foreground-500">El botón "No" es algo nervioso</p>
+            <p className="text-small text-muted">El botón "No" es algo nervioso</p>
           </div>
         )}
-      </CardBody>
+      </Card.Content>
       <style jsx>{`
         @keyframes fadeIn {
           from {
