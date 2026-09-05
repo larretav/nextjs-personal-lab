@@ -15,7 +15,7 @@ export const playfair = Playfair_Display({
   variable: '--font-playfair',
 })
 
-export const lora = Lora({ 
+export const lora = Lora({
   subsets: ['latin'],
   variable: '--font-lora',
 })

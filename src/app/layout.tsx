@@ -6,14 +6,13 @@ import clsx from "clsx";
 import { Providers } from "./providers";
 
 import { fontSans, lora, playfair } from "@/src/config/fonts";
-// import { Navbar } from "@/src/components/navbar";
 
 export const metadata: Metadata = {
   title: {
     default: "Personal Lab",
     template: `%s - Home`,
   },
-  description: "Página principal de mini proyectos diferentes",
+  description: "Registro de proyectos y experimentos web personales.",
   icons: {
     icon: "/favicon.ico",
   },
