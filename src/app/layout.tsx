@@ -42,7 +42,7 @@ export default function RootLayout({
         )}
       >
         <Providers themeProps={{ attribute: "data-theme", defaultTheme: "dark" }}>
-          <div className="relative flex flex-col h-screen">
+          <div className="relative flex min-h-screen flex-col">
             {children}
           </div>
         </Providers>
