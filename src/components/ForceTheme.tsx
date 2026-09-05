@@ -9,7 +9,7 @@ type Props = {
 export const ForceTheme = ({ to = "light" }: Props) => {
 
   const { theme, setTheme } = useTheme();
-  const previousTheme = useRef<string | undefined>();
+  const previousTheme = useRef<string | undefined>(undefined);
 
   useEffect(() => {
     previousTheme.current = theme;
