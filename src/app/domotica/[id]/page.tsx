@@ -35,7 +35,7 @@ export default async function SystemPage({ params }: PageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-200">
+    <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-3xl px-6 py-16 sm:py-20">
         <SystemDetail system={system} />
       </div>

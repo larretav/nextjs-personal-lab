@@ -13,15 +13,6 @@ export interface CatalogBrowserProps {
 
 const ALL_CATEGORIES = "Todas";
 
-const searchFieldVars =
-  "[--field-background:#f8fafc] [--field-border:#e2e8f0] [--field-placeholder:#94a3b8] [--focus:#6366f1] dark:[--field-background:#0f172a] dark:[--field-border:#334155] dark:[--field-placeholder:#64748b]";
-
-const toggleButtonVars =
-  "border border-slate-200 dark:border-slate-700 [--toggle-button-bg:#ffffff] [--toggle-button-bg-hover:#f8fafc] [--toggle-button-fg:#64748b] [--toggle-button-bg-selected:#4f46e5] [--toggle-button-bg-selected-hover:#4338ca] [--toggle-button-fg-selected:#ffffff] dark:[--toggle-button-bg:#1e293b] dark:[--toggle-button-bg-hover:#334155] dark:[--toggle-button-fg:#94a3b8] dark:[--toggle-button-bg-selected:#6366f1] dark:[--toggle-button-bg-selected-hover:#818cf8]";
-
-const badgeChipVars =
-  "[--chip-bg:#f1f5f9] [--chip-fg:#475569] dark:[--chip-bg:#334155] dark:[--chip-fg:#cbd5e1]";
-
 export function CatalogBrowser({ systems, categories }: CatalogBrowserProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(ALL_CATEGORIES);
@@ -50,12 +41,12 @@ export function CatalogBrowser({ systems, categories }: CatalogBrowserProps) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="space-y-4 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+      <div className="space-y-4 rounded-2xl border border-border bg-surface p-4 shadow-sm">
         <SearchField name="system-search" value={searchTerm} onChange={setSearchTerm}>
-          <Label className="mb-2 block text-xs font-semibold tracking-wider text-slate-400 uppercase">
+          <Label className="mb-2 block text-xs font-semibold tracking-wider text-muted uppercase">
             Buscar sistema domótico
           </Label>
-          <SearchField.Group className={searchFieldVars}>
+          <SearchField.Group>
             <SearchField.SearchIcon />
             <SearchField.Input
               className="w-full"
@@ -70,7 +61,6 @@ export function CatalogBrowser({ systems, categories }: CatalogBrowserProps) {
             <ToggleButton
               key={cat}
               size="sm"
-              className={toggleButtonVars}
               isSelected={selectedCategory === cat}
               onChange={(selected) => {
                 if (selected) setSelectedCategory(cat);
@@ -83,11 +73,11 @@ export function CatalogBrowser({ systems, categories }: CatalogBrowserProps) {
       </div>
 
       {filteredSystems.length === 0 ? (
-        <div className="flex flex-col items-start gap-3 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-          <p className="text-sm text-slate-400">
+        <div className="flex flex-col items-start gap-3 rounded-2xl border border-border bg-surface p-6 shadow-sm">
+          <p className="text-sm text-muted">
             No hay sistemas que coincidan con esos criterios.
           </p>
-          <Button size="sm" className={toggleButtonVars} onPress={clearFilters}>
+          <Button size="sm" variant="secondary" onPress={clearFilters}>
             Quitar filtros
           </Button>
         </div>
@@ -97,19 +87,19 @@ export function CatalogBrowser({ systems, categories }: CatalogBrowserProps) {
             <Link
               key={system.id}
               href={`/domotica/${system.id}`}
-              className="rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+              className="rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
-              <Card className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition-all hover:border-indigo-200 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-indigo-500/40 dark:hover:bg-slate-700/50">
+              <Card className="w-full rounded-xl border border-border px-4 py-3 shadow-sm transition-all hover:border-accent/40 hover:bg-surface-secondary">
                 <Card.Header className="flex-row items-center justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="truncate text-xs font-semibold text-indigo-500">
+                    <p className="truncate text-xs font-semibold text-accent">
                       {system.category}
                     </p>
-                    <Card.Title className="mt-0.5 truncate text-sm font-semibold text-slate-800 dark:text-slate-100">
+                    <Card.Title className="mt-0.5 truncate text-sm font-semibold">
                       {system.name}
                     </Card.Title>
                   </div>
-                  <Chip size="sm" className={badgeChipVars}>
+                  <Chip size="sm" color="default" variant="soft">
                     {system.badge}
                   </Chip>
                 </Card.Header>
@@ -120,7 +110,7 @@ export function CatalogBrowser({ systems, categories }: CatalogBrowserProps) {
       )}
 
       {hasActiveFilters && filteredSystems.length > 0 && (
-        <p className="text-sm text-slate-400">
+        <p className="text-sm text-muted">
           {filteredSystems.length} de {systems.length} sistemas.
         </p>
       )}

@@ -22,15 +22,6 @@ export interface SystemDetailProps {
   system: DomoticSystem;
 }
 
-const cardStyle =
-  "rounded-2xl border border-slate-200/80 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800";
-
-const accentBadgeVars =
-  "[--chip-bg:#eef2ff] [--chip-fg:#4338ca] dark:[--chip-bg:#3730a3]/40 dark:[--chip-fg:#c7d2fe]";
-
-const tabTriggerStyle =
-  "flex-1 gap-2 rounded-lg text-slate-600 data-[selected=true]:bg-white data-[selected=true]:font-semibold data-[selected=true]:text-indigo-600 data-[selected=true]:shadow-sm dark:text-slate-400 dark:data-[selected=true]:bg-slate-700 dark:data-[selected=true]:text-indigo-400";
-
 function SectionCard({
   icon: Icon,
   title,
@@ -41,10 +32,10 @@ function SectionCard({
   children: React.ReactNode;
 }) {
   return (
-    <Card className={`w-full ${cardStyle}`}>
+    <Card className="w-full">
       <Card.Header>
-        <div className="flex items-center gap-2 text-slate-400">
-          <Icon aria-hidden="true" className="size-4 text-indigo-500" />
+        <div className="flex items-center gap-2 text-muted">
+          <Icon aria-hidden="true" className="size-4 text-accent" />
           <span className="text-xs font-bold tracking-wider uppercase">
             {title}
           </span>
@@ -60,38 +51,35 @@ export function SystemDetail({ system }: SystemDetailProps) {
     <div className="flex flex-col gap-5">
       <Link
         href="/domotica"
-        className="inline-flex w-fit items-center gap-1 text-sm text-slate-500 transition-colors hover:text-slate-800 dark:hover:text-slate-100"
+        className="inline-flex w-fit items-center gap-1 text-sm text-muted transition-colors hover:text-foreground"
       >
         <ChevronLeft aria-hidden="true" className="size-4" />
         Volver al catálogo
       </Link>
 
-      <Card className={`w-full ${cardStyle}`}>
+      <Card className="w-full">
         <Card.Content className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
-            <span className="text-xs font-semibold tracking-wider text-indigo-600 uppercase">
+            <span className="text-xs font-semibold tracking-wider text-accent uppercase">
               {system.category}
             </span>
-            <h1 className="mt-1 text-2xl font-bold text-slate-900 dark:text-slate-50">
+            <h1 className="mt-1 text-2xl font-bold text-foreground">
               {system.name}
             </h1>
           </div>
-          <Chip className={`self-start sm:self-center ${accentBadgeVars}`}>
+          <Chip className="self-start sm:self-center" color="accent" variant="soft">
             {system.badge}
           </Chip>
         </Card.Content>
       </Card>
 
       <Tabs defaultSelectedKey="ficha">
-        <Tabs.List
-          aria-label="Secciones del sistema"
-          className="rounded-xl bg-slate-200/60 p-1.5 dark:bg-slate-800/60"
-        >
-          <Tabs.Tab className={tabTriggerStyle} id="ficha">
+        <Tabs.List aria-label="Secciones del sistema">
+          <Tabs.Tab id="ficha">
             <Info aria-hidden="true" className="size-4" />
             Ficha
           </Tabs.Tab>
-          <Tabs.Tab className={tabTriggerStyle} id="componentes">
+          <Tabs.Tab id="componentes">
             <Layers aria-hidden="true" className="size-4" />
             Componentes
           </Tabs.Tab>
@@ -99,7 +87,7 @@ export function SystemDetail({ system }: SystemDetailProps) {
 
         <Tabs.Panel className="mt-4 flex flex-col gap-4" id="ficha">
           <SectionCard icon={Target} title="Público objetivo">
-            <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+            <p className="text-sm leading-relaxed text-muted">
               {system.targetAudience}
             </p>
           </SectionCard>
@@ -109,11 +97,11 @@ export function SystemDetail({ system }: SystemDetailProps) {
               {system.needsCovered.map((need) => (
                 <li
                   key={need}
-                  className="flex items-start gap-2.5 text-sm text-slate-600 dark:text-slate-300"
+                  className="flex items-start gap-2.5 text-sm text-muted"
                 >
                   <CheckCircle2
                     aria-hidden="true"
-                    className="mt-0.5 size-4 shrink-0 text-emerald-500"
+                    className="mt-0.5 size-4 shrink-0 text-success"
                   />
                   <span>{need}</span>
                 </li>
@@ -128,16 +116,14 @@ export function SystemDetail({ system }: SystemDetailProps) {
                   key={feature.label}
                   className={`text-sm ${
                     idx < system.features.length - 1
-                      ? "border-b border-slate-100 pb-2 dark:border-slate-700"
+                      ? "border-b border-border pb-2"
                       : ""
                   }`}
                 >
-                  <span className="font-semibold text-slate-700 dark:text-slate-200">
+                  <span className="font-semibold text-foreground">
                     {feature.label}:{" "}
                   </span>
-                  <span className="text-slate-600 dark:text-slate-400">
-                    {feature.value}
-                  </span>
+                  <span className="text-muted">{feature.value}</span>
                 </div>
               ))}
             </div>
@@ -148,12 +134,12 @@ export function SystemDetail({ system }: SystemDetailProps) {
               {system.loadCapacity.map((load) => (
                 <div
                   key={load.label}
-                  className="rounded-xl border border-slate-100 bg-slate-50 p-3.5 dark:border-slate-700 dark:bg-slate-900/40"
+                  className="rounded-xl border border-border bg-surface-secondary p-3.5"
                 >
-                  <div className="mb-1 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                  <div className="mb-1 text-xs font-semibold text-muted">
                     {load.label}
                   </div>
-                  <div className="text-sm font-medium text-slate-800 dark:text-slate-200">
+                  <div className="text-sm font-medium text-foreground">
                     {load.value}
                   </div>
                 </div>
@@ -161,11 +147,11 @@ export function SystemDetail({ system }: SystemDetailProps) {
             </div>
           </SectionCard>
 
-          <Card className={`w-full ${cardStyle}`}>
+          <Card className="w-full">
             <Card.Content className="space-y-6">
               <div>
-                <div className="mb-4 flex items-center gap-2 text-slate-400">
-                  <Wrench aria-hidden="true" className="size-4 text-indigo-500" />
+                <div className="mb-4 flex items-center gap-2 text-muted">
+                  <Wrench aria-hidden="true" className="size-4 text-accent" />
                   <span className="text-xs font-bold tracking-wider uppercase">
                     Preparación en obra
                   </span>
@@ -174,53 +160,51 @@ export function SystemDetail({ system }: SystemDetailProps) {
                   {system.sitePreparation.map((item) => (
                     <li
                       key={item}
-                      className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300"
+                      className="flex items-center gap-2 text-sm text-muted"
                     >
-                      <div className="size-1.5 shrink-0 rounded-full bg-indigo-400" />
+                      <div className="size-1.5 shrink-0 rounded-full bg-accent" />
                       <span>{item}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
-              <div className="border-t border-slate-100 pt-4 dark:border-slate-700">
-                <div className="mb-2 flex items-center gap-2 text-slate-400">
-                  <HardDrive aria-hidden="true" className="size-4 text-indigo-500" />
+              <div className="border-t border-border pt-4">
+                <div className="mb-2 flex items-center gap-2 text-muted">
+                  <HardDrive aria-hidden="true" className="size-4 text-accent" />
                   <span className="text-xs font-bold tracking-wider uppercase">
                     Instalación
                   </span>
                 </div>
-                <p className="text-sm text-slate-600 dark:text-slate-300">
-                  {system.installation}
-                </p>
+                <p className="text-sm text-muted">{system.installation}</p>
               </div>
             </Card.Content>
           </Card>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="flex items-center gap-4 rounded-2xl border border-indigo-100/60 bg-indigo-50/50 p-5 dark:border-indigo-500/20 dark:bg-indigo-500/10">
-              <div className="rounded-xl bg-indigo-100/80 p-3 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-300">
+            <div className="flex items-center gap-4 rounded-2xl border border-accent/20 bg-accent-soft p-5">
+              <div className="rounded-xl bg-accent/15 p-3 text-accent">
                 <DollarSign aria-hidden="true" className="size-6" />
               </div>
               <div>
-                <div className="text-xs font-semibold text-slate-500 uppercase dark:text-slate-400">
+                <div className="text-xs font-semibold text-muted uppercase">
                   Inversión aprox.
                 </div>
-                <div className="text-lg font-bold text-slate-800 dark:text-slate-100">
+                <div className="text-lg font-bold text-foreground">
                   {system.investment}
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-4 rounded-2xl border border-slate-200/60 bg-slate-100/70 p-5 dark:border-slate-700 dark:bg-slate-700/40">
-              <div className="rounded-xl bg-slate-200 p-3 text-slate-600 dark:bg-slate-600 dark:text-slate-200">
+            <div className="flex items-center gap-4 rounded-2xl border border-border bg-surface-secondary p-5">
+              <div className="rounded-xl bg-default p-3 text-default-foreground">
                 <Wrench aria-hidden="true" className="size-6" />
               </div>
               <div>
-                <div className="text-xs font-semibold text-slate-500 uppercase dark:text-slate-400">
+                <div className="text-xs font-semibold text-muted uppercase">
                   Mantenimiento
                 </div>
-                <div className="text-lg font-bold text-slate-800 dark:text-slate-100">
+                <div className="text-lg font-bold text-foreground">
                   {system.maintenance}
                 </div>
               </div>
@@ -229,10 +213,10 @@ export function SystemDetail({ system }: SystemDetailProps) {
         </Tabs.Panel>
 
         <Tabs.Panel className="mt-4" id="componentes">
-          <Card className={`w-full ${cardStyle}`}>
+          <Card className="w-full">
             <Card.Header>
-              <div className="flex items-center gap-2 text-slate-400">
-                <Layers aria-hidden="true" className="size-4 text-indigo-500" />
+              <div className="flex items-center gap-2 text-muted">
+                <Layers aria-hidden="true" className="size-4 text-accent" />
                 <span className="text-xs font-bold tracking-wider uppercase">
                   Componentes del sistema
                 </span>
@@ -240,8 +224,8 @@ export function SystemDetail({ system }: SystemDetailProps) {
             </Card.Header>
             <Card.Content>
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm text-slate-600 dark:text-slate-300">
-                  <thead className="border-b border-slate-100 text-xs font-bold tracking-wider text-slate-400 uppercase dark:border-slate-700">
+                <table className="w-full text-left text-sm text-muted">
+                  <thead className="border-b border-border text-xs font-bold tracking-wider text-muted uppercase">
                     <tr>
                       <th className="px-4 py-3">Componente</th>
                       <th className="px-4 py-3">Categoría</th>
@@ -250,19 +234,19 @@ export function SystemDetail({ system }: SystemDetailProps) {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                  <tbody className="divide-y divide-border">
                     {system.components.map((component) => (
                       <tr
                         key={component.name}
-                        className="transition-colors hover:bg-slate-50/50 dark:hover:bg-slate-700/30"
+                        className="transition-colors hover:bg-surface-secondary"
                       >
-                        <td className="px-4 py-3.5 font-medium text-slate-800 dark:text-slate-100">
+                        <td className="px-4 py-3.5 font-medium text-foreground">
                           {component.name}
                         </td>
-                        <td className="px-4 py-3.5 text-slate-500 dark:text-slate-400">
+                        <td className="px-4 py-3.5 text-muted">
                           {component.type}
                         </td>
-                        <td className="px-4 py-3.5 text-right font-semibold text-indigo-600 dark:text-indigo-400">
+                        <td className="px-4 py-3.5 text-right font-semibold text-accent">
                           {component.qty}
                         </td>
                       </tr>

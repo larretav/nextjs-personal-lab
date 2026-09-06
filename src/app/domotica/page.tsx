@@ -12,14 +12,14 @@ export const metadata: Metadata = {
 
 export default function DomoticaPage() {
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-200">
+    <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-3xl px-6 py-16 sm:py-20">
         <header className="flex items-start justify-between gap-6">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl dark:text-slate-50">
+            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
               Catálogo domótico
             </h1>
-            <p className="mt-2 max-w-xl text-slate-500 dark:text-slate-400">
+            <p className="mt-2 max-w-xl text-muted">
               Seis sistemas de hogar inteligente: para qué sirven, qué
               necesitan de la vivienda y qué llevan para instalarse.
             </p>
