@@ -41,6 +41,24 @@ export default function HomePage() {
             </Card.Footer>
           </Card>
 
+          <Card className="w-full">
+            <Card.Header>
+              <Card.Title>Catálogo domótico</Card.Title>
+              <Card.Description>
+                Ficha técnica de sistemas de hogar inteligente, para no tener
+                que leer manuales de fabricante.
+              </Card.Description>
+            </Card.Header>
+            <Card.Footer className="items-center justify-between">
+              <Chip color="success" variant="soft">
+                Abierto
+              </Chip>
+              <Link href="/domotica" className={buttonVariants({ size: "sm" })}>
+                Abrir
+              </Link>
+            </Card.Footer>
+          </Card>
+
           <Card className="w-full" variant="transparent">
             <Card.Header>
               <Card.Title>Próxima entrada</Card.Title>

@@ -1,0 +1,25 @@
+/*
+ * HeroUI computes --accent-soft, --accent-hover, etc. once at the <html>
+ * root via color-mix(var(--accent), ...). Overriding --accent alone on a
+ * nested element does not recompute those derived tokens (custom property
+ * inheritance copies the already-resolved value, it does not re-run the
+ * color-mix()). So every derived accent token actually used in /domotica
+ * has to be redeclared here too, scoped the same way.
+ */
+.domotica-theme {
+    --accent: #4f46e5;
+    --focus: var(--accent);
+    --link: var(--accent);
+    --accent-hover: color-mix(in oklab, var(--accent) 90%, var(--accent-foreground) 10%);
+    --accent-soft: color-mix(in oklab, var(--accent) 6%, transparent);
+    --accent-soft-foreground: color-mix(in oklab, var(--accent) 70%, var(--foreground) 30%);
+    --accent-soft-hover: color-mix(in oklab, var(--accent) 10%, transparent);
+}
+
+[data-theme="dark"] .domotica-theme {
+    --accent: #818cf8;
+    --accent-hover: color-mix(in oklab, var(--accent) 90%, var(--accent-foreground) 10%);
+    --accent-soft: color-mix(in oklab, var(--accent) 12%, transparent);
+    --accent-soft-foreground: color-mix(in oklab, var(--accent) 80%, var(--foreground) 30%);
+    --accent-soft-hover: color-mix(in oklab, var(--accent) 16%, transparent);
+}
