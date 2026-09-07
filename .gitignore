@@ -39,3 +39,8 @@ pnpm-lock.yaml
 yarn.lock
 package-lock.json
 bun.lockb
+
+# agent skill installs (reproducible from skills-lock.json)
+.agents/
+.atl/
+.claude/skills/
