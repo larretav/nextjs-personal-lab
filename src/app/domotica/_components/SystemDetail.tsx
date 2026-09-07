@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { Card, Chip, Tabs } from "@heroui/react";
 
-import type { DomoticSystem } from "../_data/systems";
+import type { DomoticSystem } from "../_data/types";
 
 export interface SystemDetailProps {
   system: DomoticSystem;
@@ -59,13 +59,23 @@ export function SystemDetail({ system }: SystemDetailProps) {
 
       <Card className="w-full rounded-2xl border border-border p-6">
         <Card.Content className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <div>
-            <span className="text-xs font-semibold tracking-wider text-accent uppercase">
-              {system.category}
-            </span>
-            <h1 className="mt-1 text-2xl font-bold text-foreground">
-              {system.name}
-            </h1>
+          <div className="flex items-center gap-4">
+            {system.imageUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                alt={system.name}
+                className="size-16 shrink-0 rounded-xl border border-border object-cover"
+                src={system.imageUrl}
+              />
+            )}
+            <div>
+              <span className="text-xs font-semibold tracking-wider text-accent uppercase">
+                {system.category}
+              </span>
+              <h1 className="mt-1 text-2xl font-bold text-foreground">
+                {system.name}
+              </h1>
+            </div>
           </div>
           <Chip className="self-start sm:self-center" color="accent" variant="soft">
             {system.badge}

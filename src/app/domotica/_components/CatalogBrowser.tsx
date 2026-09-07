@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Button, Card, Chip, Label, SearchField, ToggleButton } from "@heroui/react";
 
-import type { DomoticSystem } from "../_data/systems";
+import type { DomoticSystem } from "../_data/types";
 
 export interface CatalogBrowserProps {
   systems: DomoticSystem[];
@@ -95,13 +95,23 @@ export function CatalogBrowser({ systems, categories }: CatalogBrowserProps) {
             >
               <Card className="w-full rounded-xl border border-border px-4 py-3 transition-all hover:border-accent/40 hover:bg-accent-soft-hover">
                 <Card.Header className="flex-row items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="truncate text-xs font-semibold text-accent">
-                      {system.category}
-                    </p>
-                    <Card.Title className="mt-0.5 truncate text-sm font-semibold">
-                      {system.name}
-                    </Card.Title>
+                  <div className="flex min-w-0 items-center gap-3">
+                    {system.imageUrl && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        alt=""
+                        className="size-10 shrink-0 rounded-lg border border-border object-cover"
+                        src={system.imageUrl}
+                      />
+                    )}
+                    <div className="min-w-0">
+                      <p className="truncate text-xs font-semibold text-accent">
+                        {system.category}
+                      </p>
+                      <Card.Title className="mt-0.5 truncate text-sm font-semibold">
+                        {system.name}
+                      </Card.Title>
+                    </div>
                   </div>
                   <Chip size="sm" color="default" variant="soft">
                     {system.badge}

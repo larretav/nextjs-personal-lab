@@ -1,20 +1,18 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { systemsData } from "../_data/systems";
+import { getSystemBySlug } from "../_data/queries";
 import { SystemDetail } from "../_components/SystemDetail";
+
+export const dynamic = "force-dynamic";
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-export function generateStaticParams() {
-  return Object.keys(systemsData).map((id) => ({ id }));
-}
-
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
-  const system = systemsData[id];
+  const system = await getSystemBySlug(id);
 
   if (!system) {
     return { title: "Sistema no encontrado" };
@@ -28,17 +26,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function SystemPage({ params }: PageProps) {
   const { id } = await params;
-  const system = systemsData[id];
+  const system = await getSystemBySlug(id);
 
   if (!system) {
     notFound();
   }
 
-  return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto max-w-3xl px-6 py-16 sm:py-20">
-        <SystemDetail system={system} />
-      </div>
-    </div>
-  );
+  return <SystemDetail system={system} />;
 }
