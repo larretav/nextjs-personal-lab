@@ -41,36 +41,40 @@ export function CatalogBrowser({ systems, categories }: CatalogBrowserProps) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="space-y-4 rounded-2xl border border-border bg-surface p-4 shadow-sm">
-        <SearchField name="system-search" value={searchTerm} onChange={setSearchTerm}>
-          <Label className="mb-2 block text-xs font-semibold tracking-wider text-muted uppercase">
-            Buscar sistema domótico
-          </Label>
-          <SearchField.Group>
-            <SearchField.SearchIcon />
-            <SearchField.Input
-              className="w-full"
-              placeholder="Ej. cámara, termostato, cerradura..."
-            />
-            <SearchField.ClearButton />
-          </SearchField.Group>
-        </SearchField>
+      <Card className="rounded-2xl border border-border">
+        <Card.Content className="flex flex-col gap-4">
+          <SearchField name="system-search" value={searchTerm} onChange={setSearchTerm} variant="secondary">
+            <Label className="mb-2 block text-xs font-semibold tracking-wider text-muted uppercase ">
+              Buscar sistema domótico
+            </Label>
+            <SearchField.Group >
+              <SearchField.SearchIcon />
+              <SearchField.Input
+                className="w-full"
+                placeholder="Ej. cámara, termostato, cerradura..."
 
-        <div className="flex flex-wrap gap-2">
-          {[ALL_CATEGORIES, ...categories].map((cat) => (
-            <ToggleButton
-              key={cat}
-              size="sm"
-              isSelected={selectedCategory === cat}
-              onChange={(selected) => {
-                if (selected) setSelectedCategory(cat);
-              }}
-            >
-              {cat}
-            </ToggleButton>
-          ))}
-        </div>
-      </div>
+              />
+              <SearchField.ClearButton />
+            </SearchField.Group>
+          </SearchField>
+
+          <div className="flex flex-wrap gap-2">
+            {[ALL_CATEGORIES, ...categories].map((cat) => (
+              <ToggleButton
+                key={cat}
+                size="sm"
+                className="[--toggle-button-bg-selected:var(--accent)] [--toggle-button-bg-selected-hover:var(--accent-hover)] [--toggle-button-fg-selected:var(--accent-foreground)]"
+                isSelected={selectedCategory === cat}
+                onChange={(selected) => {
+                  if (selected) setSelectedCategory(cat);
+                }}
+              >
+                {cat}
+              </ToggleButton>
+            ))}
+          </div>
+        </Card.Content>
+      </Card>
 
       {filteredSystems.length === 0 ? (
         <div className="flex flex-col items-start gap-3 rounded-2xl border border-border bg-surface p-6 shadow-sm">
@@ -87,9 +91,9 @@ export function CatalogBrowser({ systems, categories }: CatalogBrowserProps) {
             <Link
               key={system.id}
               href={`/domotica/${system.id}`}
-              className="rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
-              <Card className="w-full rounded-xl border border-border px-4 py-3 shadow-sm transition-all hover:border-accent/40 hover:bg-surface-secondary">
+              <Card className="w-full rounded-xl border border-border px-4 py-3 transition-all hover:border-accent/40 hover:bg-accent-soft-hover">
                 <Card.Header className="flex-row items-center justify-between gap-3">
                   <div className="min-w-0">
                     <p className="truncate text-xs font-semibold text-accent">

@@ -32,10 +32,10 @@ function SectionCard({
   children: React.ReactNode;
 }) {
   return (
-    <Card className="w-full">
+    <Card className="w-full rounded-2xl border border-border p-6 transition-colors">
       <Card.Header>
         <div className="flex items-center gap-2 text-muted">
-          <Icon aria-hidden="true" className="size-4 text-accent" />
+          <Icon aria-hidden="true" className="size-5 text-accent" />
           <span className="text-xs font-bold tracking-wider uppercase">
             {title}
           </span>
@@ -57,7 +57,7 @@ export function SystemDetail({ system }: SystemDetailProps) {
         Volver al catálogo
       </Link>
 
-      <Card className="w-full">
+      <Card className="w-full rounded-2xl border border-border p-6">
         <Card.Content className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
             <span className="text-xs font-semibold tracking-wider text-accent uppercase">
@@ -74,16 +74,20 @@ export function SystemDetail({ system }: SystemDetailProps) {
       </Card>
 
       <Tabs defaultSelectedKey="ficha">
-        <Tabs.List aria-label="Secciones del sistema">
-          <Tabs.Tab id="ficha">
-            <Info aria-hidden="true" className="size-4" />
-            Ficha
-          </Tabs.Tab>
-          <Tabs.Tab id="componentes">
-            <Layers aria-hidden="true" className="size-4" />
-            Componentes
-          </Tabs.Tab>
-        </Tabs.List>
+        <Tabs.ListContainer>
+          <Tabs.List aria-label="Secciones del sistema">
+            <Tabs.Tab id="ficha" className="data-[selected=true]:text-accent">
+              <Info aria-hidden="true" className="size-4 mr-2" />
+              Ficha
+              <Tabs.Indicator />
+            </Tabs.Tab>
+            <Tabs.Tab id="componentes" className="data-[selected=true]:text-accent">
+              <Layers aria-hidden="true" className="size-4 mr-2" />
+              Componentes
+              <Tabs.Indicator />
+            </Tabs.Tab>
+          </Tabs.List>
+        </Tabs.ListContainer>
 
         <Tabs.Panel className="mt-4 flex flex-col gap-4" id="ficha">
           <SectionCard icon={Target} title="Público objetivo">
@@ -114,11 +118,10 @@ export function SystemDetail({ system }: SystemDetailProps) {
               {system.features.map((feature, idx) => (
                 <div
                   key={feature.label}
-                  className={`text-sm ${
-                    idx < system.features.length - 1
-                      ? "border-b border-border pb-2"
-                      : ""
-                  }`}
+                  className={`text-sm ${idx < system.features.length - 1
+                    ? "border-b border-border pb-2"
+                    : ""
+                    }`}
                 >
                   <span className="font-semibold text-foreground">
                     {feature.label}:{" "}
@@ -147,11 +150,11 @@ export function SystemDetail({ system }: SystemDetailProps) {
             </div>
           </SectionCard>
 
-          <Card className="w-full">
+          <Card className="w-full rounded-2xl border border-border p-6 transition-colors">
             <Card.Content className="space-y-6">
               <div>
                 <div className="mb-4 flex items-center gap-2 text-muted">
-                  <Wrench aria-hidden="true" className="size-4 text-accent" />
+                  <Wrench aria-hidden="true" className="size-5 text-accent" />
                   <span className="text-xs font-bold tracking-wider uppercase">
                     Preparación en obra
                   </span>
@@ -162,7 +165,7 @@ export function SystemDetail({ system }: SystemDetailProps) {
                       key={item}
                       className="flex items-center gap-2 text-sm text-muted"
                     >
-                      <div className="size-1.5 shrink-0 rounded-full bg-accent" />
+                      <div className="size-1.5 shrink-0 rounded-full bg-accent/70" />
                       <span>{item}</span>
                     </li>
                   ))}
@@ -171,7 +174,7 @@ export function SystemDetail({ system }: SystemDetailProps) {
 
               <div className="border-t border-border pt-4">
                 <div className="mb-2 flex items-center gap-2 text-muted">
-                  <HardDrive aria-hidden="true" className="size-4 text-accent" />
+                  <HardDrive aria-hidden="true" className="size-5 text-accent" />
                   <span className="text-xs font-bold tracking-wider uppercase">
                     Instalación
                   </span>
@@ -183,7 +186,7 @@ export function SystemDetail({ system }: SystemDetailProps) {
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="flex items-center gap-4 rounded-2xl border border-accent/20 bg-accent-soft p-5">
-              <div className="rounded-xl bg-accent/15 p-3 text-accent">
+              <div className="rounded-xl bg-accent/20 p-3 text-accent">
                 <DollarSign aria-hidden="true" className="size-6" />
               </div>
               <div>
@@ -213,10 +216,10 @@ export function SystemDetail({ system }: SystemDetailProps) {
         </Tabs.Panel>
 
         <Tabs.Panel className="mt-4" id="componentes">
-          <Card className="w-full">
+          <Card className="w-full rounded-2xl border border-border p-6 transition-colors">
             <Card.Header>
               <div className="flex items-center gap-2 text-muted">
-                <Layers aria-hidden="true" className="size-4 text-accent" />
+                <Layers aria-hidden="true" className="size-5 text-accent" />
                 <span className="text-xs font-bold tracking-wider uppercase">
                   Componentes del sistema
                 </span>
@@ -225,7 +228,7 @@ export function SystemDetail({ system }: SystemDetailProps) {
             <Card.Content>
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm text-muted">
-                  <thead className="border-b border-border text-xs font-bold tracking-wider text-muted uppercase">
+                  <thead className="border-b border-border bg-surface-secondary text-xs font-bold tracking-wider text-muted uppercase">
                     <tr>
                       <th className="px-4 py-3">Componente</th>
                       <th className="px-4 py-3">Categoría</th>
@@ -258,6 +261,6 @@ export function SystemDetail({ system }: SystemDetailProps) {
           </Card>
         </Tabs.Panel>
       </Tabs>
-    </div>
+    </div >
   );
 }
