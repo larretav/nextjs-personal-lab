@@ -5,7 +5,12 @@ import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/src/lib/supabase/admin";
 import type { Json } from "@/src/lib/supabase/database.types";
 
-import type { ComponentItem, FeatureItem } from "../_data/types";
+import {
+  INVESTMENT_LEVELS,
+  MAINTENANCE_LEVELS,
+  type ComponentItem,
+  type FeatureItem,
+} from "../_data/types";
 
 export interface CreateSystemInput {
   slug: string;
@@ -60,8 +65,16 @@ export async function createSystem(
     return { ok: false, error: "Faltan campos obligatorios de la ficha." };
   }
 
-  if (!input.installation.trim() || !input.investment.trim() || !input.maintenance.trim()) {
-    return { ok: false, error: "Faltan instalación, inversión o mantenimiento." };
+  if (!input.installation.trim()) {
+    return { ok: false, error: "Falta la instalación." };
+  }
+
+  if (!INVESTMENT_LEVELS.includes(input.investment as (typeof INVESTMENT_LEVELS)[number])) {
+    return { ok: false, error: "Elegí un nivel de inversión válido." };
+  }
+
+  if (!MAINTENANCE_LEVELS.includes(input.maintenance as (typeof MAINTENANCE_LEVELS)[number])) {
+    return { ok: false, error: "Elegí un nivel de mantenimiento válido." };
   }
 
   const components = input.components
@@ -89,7 +102,11 @@ export async function createSystem(
 
   if (insertError) {
     if (insertError.code === "23505") {
-      return { ok: false, error: "Ya existe un sistema con ese slug." };
+      return {
+        ok: false,
+        error:
+          "Ya existe un sistema con un nombre muy similar. Probá con un nombre más específico.",
+      };
     }
 
     return { ok: false, error: insertError.message };

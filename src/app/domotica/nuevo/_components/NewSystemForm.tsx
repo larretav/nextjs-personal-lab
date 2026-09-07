@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   Button,
@@ -18,7 +18,12 @@ import { ImagePlus, Plus, X } from "lucide-react";
 
 import { createSystem } from "../../_actions/createSystem";
 import { uploadSystemImage } from "../../_actions/uploadSystemImage";
-import type { ComponentItem, FeatureItem } from "../../_data/types";
+import {
+  INVESTMENT_LEVELS,
+  MAINTENANCE_LEVELS,
+  type ComponentItem,
+  type FeatureItem,
+} from "../../_data/types";
 import type { Tables } from "@/src/lib/supabase/database.types";
 
 const MAX_IMAGE_SIZE_MB = 1;
@@ -97,8 +102,6 @@ export function NewSystemForm({ categories }: NewSystemFormProps) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  const [slug, setSlug] = useState("");
-  const [slugTouched, setSlugTouched] = useState(false);
   const [categoryId, setCategoryId] = useState<number | null>(
     categories[0]?.id ?? null
   );
@@ -117,6 +120,8 @@ export function NewSystemForm({ categories }: NewSystemFormProps) {
   const [components, setComponents] = useState<ComponentItem[]>([
     { name: "", type: "", qty: "" },
   ]);
+
+  const slug = useMemo(() => slugify(name), [name]);
 
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -221,23 +226,7 @@ export function NewSystemForm({ categories }: NewSystemFormProps) {
               placeholder="Ej. Cámara de videovigilancia PoE - Ubiquiti"
               value={name}
               variant="secondary"
-              onChange={(e) => {
-                setName(e.target.value);
-                if (!slugTouched) setSlug(slugify(e.target.value));
-              }}
-            />
-          </TextField>
-
-          <TextField isRequired>
-            <Label>Slug (para la URL)</Label>
-            <Input
-              placeholder="ej-mi-sistema"
-              value={slug}
-              variant="secondary"
-              onChange={(e) => {
-                setSlugTouched(true);
-                setSlug(slugify(e.target.value));
-              }}
+              onChange={(e) => setName(e.target.value)}
             />
           </TextField>
 
@@ -338,25 +327,47 @@ export function NewSystemForm({ categories }: NewSystemFormProps) {
             />
           </TextField>
 
-          <TextField isRequired>
+          <Select
+            selectedKey={investment || null}
+            variant="secondary"
+            onSelectionChange={(key) => setInvestment(String(key))}
+          >
             <Label>Inversión aprox.</Label>
-            <Input
-              placeholder="Ej. Media"
-              value={investment}
-              variant="secondary"
-              onChange={(e) => setInvestment(e.target.value)}
-            />
-          </TextField>
+            <Select.Trigger>
+              <Select.Value />
+              <Select.Indicator />
+            </Select.Trigger>
+            <Select.Popover>
+              <ListBox>
+                {INVESTMENT_LEVELS.map((level) => (
+                  <ListBoxItem key={level} id={level} textValue={level}>
+                    {level}
+                  </ListBoxItem>
+                ))}
+              </ListBox>
+            </Select.Popover>
+          </Select>
 
-          <TextField isRequired>
+          <Select
+            selectedKey={maintenance || null}
+            variant="secondary"
+            onSelectionChange={(key) => setMaintenance(String(key))}
+          >
             <Label>Mantenimiento</Label>
-            <Input
-              placeholder="Ej. Baja"
-              value={maintenance}
-              variant="secondary"
-              onChange={(e) => setMaintenance(e.target.value)}
-            />
-          </TextField>
+            <Select.Trigger>
+              <Select.Value />
+              <Select.Indicator />
+            </Select.Trigger>
+            <Select.Popover>
+              <ListBox>
+                {MAINTENANCE_LEVELS.map((level) => (
+                  <ListBoxItem key={level} id={level} textValue={level}>
+                    {level}
+                  </ListBoxItem>
+                ))}
+              </ListBox>
+            </Select.Popover>
+          </Select>
         </Card.Content>
       </Card>
 

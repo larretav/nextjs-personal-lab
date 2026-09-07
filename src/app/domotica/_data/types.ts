@@ -1,3 +1,6 @@
+export const INVESTMENT_LEVELS = ["Baja", "Media", "Alta"] as const;
+export const MAINTENANCE_LEVELS = ["Baja", "Media", "Alta"] as const;
+
 export interface FeatureItem {
   label: string;
   value: string;
