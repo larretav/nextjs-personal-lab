@@ -8,28 +8,16 @@ import type { Json } from "@/src/lib/supabase/database.types";
 import {
   INVESTMENT_LEVELS,
   MAINTENANCE_LEVELS,
-  type ComponentItem,
   type FeatureItem,
 } from "../_data/types";
+import type { CreateSystemInput } from "./createSystem";
 import { normalizeComponents } from "./normalizeComponents";
 
-export interface CreateSystemInput {
-  slug: string;
-  categoryId: number;
-  name: string;
-  badge: string;
-  targetAudience: string;
-  needsCovered: string[];
-  features: FeatureItem[];
-  loadCapacity: FeatureItem[];
-  sitePreparation: string[];
-  installation: string;
-  investment: string;
-  maintenance: string;
-  components: ComponentItem[];
+export interface UpdateSystemInput extends CreateSystemInput {
+  originalSlug: string;
 }
 
-export interface CreateSystemResult {
+export interface UpdateSystemResult {
   ok: boolean;
   error?: string;
 }
@@ -46,10 +34,15 @@ function cleanPairs(values: FeatureItem[]): FeatureItem[] {
     .filter((v) => v.label.length > 0 && v.value.length > 0);
 }
 
-export async function createSystem(
-  input: CreateSystemInput
-): Promise<CreateSystemResult> {
+export async function updateSystem(
+  input: UpdateSystemInput
+): Promise<UpdateSystemResult> {
+  const originalSlug = input.originalSlug.trim().toLowerCase();
   const slug = input.slug.trim().toLowerCase();
+
+  if (!originalSlug) {
+    return { ok: false, error: "Falta el sistema a editar." };
+  }
 
   if (!SLUG_PATTERN.test(slug)) {
     return {
@@ -86,9 +79,9 @@ export async function createSystem(
 
   const components = componentsResult.components;
 
-  const { data: system, error: insertError } = await supabaseAdmin
+  const { data: system, error: updateError } = await supabaseAdmin
     .from("systems")
-    .insert({
+    .update({
       slug,
       category_id: input.categoryId,
       name: input.name.trim(),
@@ -101,12 +94,14 @@ export async function createSystem(
       installation: input.installation.trim(),
       investment: input.investment.trim(),
       maintenance: input.maintenance.trim(),
+      updated_at: new Date().toISOString(),
     })
+    .eq("slug", originalSlug)
     .select("id")
-    .single();
+    .maybeSingle();
 
-  if (insertError) {
-    if (insertError.code === "23505") {
+  if (updateError) {
+    if (updateError.code === "23505") {
       return {
         ok: false,
         error:
@@ -114,7 +109,20 @@ export async function createSystem(
       };
     }
 
-    return { ok: false, error: insertError.message };
+    return { ok: false, error: updateError.message };
+  }
+
+  if (!system) {
+    return { ok: false, error: "El sistema que intentás editar ya no existe." };
+  }
+
+  const { error: deleteComponentsError } = await supabaseAdmin
+    .from("system_components")
+    .delete()
+    .eq("system_id", system.id);
+
+  if (deleteComponentsError) {
+    return { ok: false, error: deleteComponentsError.message };
   }
 
   if (components.length > 0) {
@@ -128,6 +136,8 @@ export async function createSystem(
   }
 
   revalidatePath("/domotica");
+  revalidatePath(`/domotica/${originalSlug}`);
+  if (slug !== originalSlug) revalidatePath(`/domotica/${slug}`);
 
   return { ok: true };
 }

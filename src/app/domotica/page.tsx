@@ -25,13 +25,8 @@ export default async function DomoticaPage() {
       <header className="flex items-start justify-between gap-6">
         <div>
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-            Catálogo domótico
+            Sistemas inteligentes
           </h1>
-          <p className="mt-2 max-w-xl text-muted">
-            {systemsList.length} sistemas de hogar inteligente: para qué
-            sirven, qué necesitan de la vivienda y qué llevan para
-            instalarse.
-          </p>
         </div>
         <ThemeSwitch className="mt-2 shrink-0" />
       </header>

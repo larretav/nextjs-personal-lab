@@ -17,11 +17,14 @@ import imageCompression from "browser-image-compression";
 import { ImagePlus, Plus, X } from "lucide-react";
 
 import { createSystem } from "../../_actions/createSystem";
+import { updateSystem } from "../../_actions/updateSystem";
+import { uploadComponentImage } from "../../_actions/uploadComponentImage";
 import { uploadSystemImage } from "../../_actions/uploadSystemImage";
 import {
   INVESTMENT_LEVELS,
   MAINTENANCE_LEVELS,
   type ComponentItem,
+  type EditableSystemData,
   type FeatureItem,
 } from "../../_data/types";
 import type { Tables } from "@/src/lib/supabase/database.types";
@@ -30,6 +33,8 @@ const MAX_IMAGE_SIZE_MB = 1;
 
 export interface NewSystemFormProps {
   categories: Tables<"categories">[];
+  initialData?: EditableSystemData;
+  originalSlug?: string;
 }
 
 function slugify(value: string): string {
@@ -97,29 +102,150 @@ function RepeatingRows<T>({
   );
 }
 
-export function NewSystemForm({ categories }: NewSystemFormProps) {
+interface ComponentRow extends ComponentItem {
+  imageFile?: File | null;
+  imagePreviewUrl?: string | null;
+}
+
+function ComponentImagePicker({
+  imageUrl,
+  hasImage,
+  onSelect,
+  onClear,
+}: {
+  imageUrl: string | null;
+  hasImage: boolean;
+  onSelect: (file: File) => void;
+  onClear: () => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isCompressing, setIsCompressing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleFile = async (file: File | undefined) => {
+    if (!file) return;
+
+    setError(null);
+    setIsCompressing(true);
+
+    try {
+      const compressed = await imageCompression(file, {
+        maxSizeMB: MAX_IMAGE_SIZE_MB,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+      });
+
+      onSelect(compressed);
+    } catch {
+      setError("No se pudo procesar la imagen.");
+    } finally {
+      setIsCompressing(false);
+    }
+  };
+
+  return (
+    <div className="flex shrink-0 flex-col items-center gap-1">
+      <input
+        ref={inputRef}
+        accept="image/jpeg,image/png,image/webp"
+        className="hidden"
+        type="file"
+        onChange={(e) => handleFile(e.target.files?.[0])}
+      />
+      <div className="flex items-center gap-1">
+        {imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            alt=""
+            className="size-10 shrink-0 rounded-lg border border-border object-cover"
+            src={imageUrl}
+          />
+        ) : (
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-dashed border-border text-muted">
+            <ImagePlus aria-hidden="true" className="size-4" />
+          </div>
+        )}
+        <Button
+          aria-label={hasImage ? "Cambiar imagen del componente" : "Elegir imagen del componente"}
+          isDisabled={isCompressing}
+          isIconOnly
+          size="sm"
+          type="button"
+          variant="secondary"
+          onPress={() => inputRef.current?.click()}
+        >
+          <ImagePlus aria-hidden="true" className="size-4" />
+        </Button>
+        {hasImage && (
+          <Button
+            aria-label="Quitar imagen del componente"
+            isIconOnly
+            size="sm"
+            type="button"
+            variant="ghost"
+            onPress={onClear}
+          >
+            <X aria-hidden="true" className="size-4" />
+          </Button>
+        )}
+      </div>
+      {error && <p className="text-[11px] text-danger">{error}</p>}
+    </div>
+  );
+}
+
+export function NewSystemForm({
+  categories,
+  initialData,
+  originalSlug,
+}: NewSystemFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
+  const isEditMode = Boolean(initialData && originalSlug);
+
   const [categoryId, setCategoryId] = useState<number | null>(
-    categories[0]?.id ?? null
+    initialData?.categoryId ?? categories[0]?.id ?? null
   );
-  const [name, setName] = useState("");
-  const [badge, setBadge] = useState("");
-  const [targetAudience, setTargetAudience] = useState("");
-  const [installation, setInstallation] = useState("");
-  const [investment, setInvestment] = useState("");
-  const [maintenance, setMaintenance] = useState("");
-  const [needsCovered, setNeedsCovered] = useState<string[]>([""]);
-  const [sitePreparation, setSitePreparation] = useState<string[]>([""]);
-  const [features, setFeatures] = useState<FeatureItem[]>([{ label: "", value: "" }]);
-  const [loadCapacity, setLoadCapacity] = useState<FeatureItem[]>([
-    { label: "", value: "" },
-  ]);
-  const [components, setComponents] = useState<ComponentItem[]>([
-    { name: "", type: "", qty: "" },
-  ]);
+  const [name, setName] = useState(initialData?.name ?? "");
+  const [badge, setBadge] = useState(initialData?.badge ?? "");
+  const [targetAudience, setTargetAudience] = useState(
+    initialData?.targetAudience ?? ""
+  );
+  const [installation, setInstallation] = useState(initialData?.installation ?? "");
+  const [investment, setInvestment] = useState(initialData?.investment ?? "");
+  const [maintenance, setMaintenance] = useState(initialData?.maintenance ?? "");
+  const [needsCovered, setNeedsCovered] = useState<string[]>(
+    initialData?.needsCovered.length ? initialData.needsCovered : [""]
+  );
+  const [sitePreparation, setSitePreparation] = useState<string[]>(
+    initialData?.sitePreparation.length ? initialData.sitePreparation : [""]
+  );
+  const [features, setFeatures] = useState<FeatureItem[]>(
+    initialData?.features.length ? initialData.features : [{ label: "", value: "" }]
+  );
+  const [loadCapacity, setLoadCapacity] = useState<FeatureItem[]>(
+    initialData?.loadCapacity.length
+      ? initialData.loadCapacity
+      : [{ label: "", value: "" }]
+  );
+  const [components, setComponents] = useState<ComponentRow[]>(
+    initialData?.components.length
+      ? initialData.components.map((c) => ({ ...c, imageFile: null, imagePreviewUrl: null }))
+      : [{ name: "", type: "", qty: "", imagePath: null, imageUrl: null, imageFile: null, imagePreviewUrl: null }]
+  );
+
+  const componentsRef = useRef(components);
+  componentsRef.current = components;
+
+  useEffect(() => {
+    return () => {
+      for (const component of componentsRef.current) {
+        if (component.imagePreviewUrl) URL.revokeObjectURL(component.imagePreviewUrl);
+      }
+    };
+  }, []);
 
   const slug = useMemo(() => slugify(name), [name]);
 
@@ -128,6 +254,8 @@ export function NewSystemForm({ categories }: NewSystemFormProps) {
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [isCompressingImage, setIsCompressingImage] = useState(false);
   const [imageError, setImageError] = useState<string | null>(null);
+
+  const displayImageUrl = imagePreviewUrl ?? initialData?.imageUrl ?? null;
 
   useEffect(() => {
     return () => {
@@ -176,7 +304,39 @@ export function NewSystemForm({ categories }: NewSystemFormProps) {
     setError(null);
 
     startTransition(async () => {
-      const result = await createSystem({
+      const uploadedComponents: ComponentItem[] = [];
+
+      for (const component of components) {
+        let imagePath = component.imagePath ?? null;
+
+        if (component.imageFile) {
+          const componentImageFormData = new FormData();
+
+          componentImageFormData.append(
+            "file",
+            component.imageFile,
+            component.imageFile.name
+          );
+
+          const uploadResult = await uploadComponentImage(componentImageFormData);
+
+          if (!uploadResult.ok || !uploadResult.imagePath) {
+            setError(uploadResult.error ?? "No se pudo subir la imagen de un componente.");
+            return;
+          }
+
+          imagePath = uploadResult.imagePath;
+        }
+
+        uploadedComponents.push({
+          name: component.name,
+          type: component.type,
+          qty: component.qty,
+          imagePath,
+        });
+      }
+
+      const payload = {
         slug,
         categoryId: categoryId ?? 0,
         name,
@@ -189,11 +349,21 @@ export function NewSystemForm({ categories }: NewSystemFormProps) {
         sitePreparation,
         features,
         loadCapacity,
-        components,
-      });
+        components: uploadedComponents,
+      };
+
+      const result =
+        isEditMode && originalSlug
+          ? await updateSystem({ ...payload, originalSlug })
+          : await createSystem(payload);
 
       if (!result.ok) {
-        setError(result.error ?? "No se pudo crear el sistema.");
+        setError(
+          result.error ??
+            (isEditMode
+              ? "No se pudieron guardar los cambios."
+              : "No se pudo crear el sistema.")
+        );
         return;
       }
 
@@ -202,7 +372,7 @@ export function NewSystemForm({ categories }: NewSystemFormProps) {
 
         imageFormData.append("slug", slug);
         imageFormData.append("file", imageFile, imageFile.name);
-        // Best-effort: the system itself was created successfully either way.
+        // Best-effort: the system itself was saved successfully either way.
         await uploadSystemImage(imageFormData);
       }
 
@@ -271,12 +441,12 @@ export function NewSystemForm({ categories }: NewSystemFormProps) {
               onChange={(e) => handleImageSelected(e.target.files?.[0])}
             />
             <div className="flex items-center gap-3">
-              {imagePreviewUrl && (
+              {displayImageUrl && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   alt="Vista previa"
                   className="size-16 shrink-0 rounded-xl border border-border object-cover"
-                  src={imagePreviewUrl}
+                  src={displayImageUrl}
                 />
               )}
               <Button
@@ -288,7 +458,7 @@ export function NewSystemForm({ categories }: NewSystemFormProps) {
                 <ImagePlus aria-hidden="true" className="size-4" />
                 {isCompressingImage
                   ? "Comprimiendo..."
-                  : imageFile
+                  : imageFile || displayImageUrl
                     ? "Cambiar imagen"
                     : "Elegir imagen"}
               </Button>
@@ -462,34 +632,66 @@ export function NewSystemForm({ categories }: NewSystemFormProps) {
           <RepeatingRows
             label="Componentes"
             rows={components}
-            emptyRow={{ name: "", type: "", qty: "" }}
+            emptyRow={{
+              name: "",
+              type: "",
+              qty: "",
+              imagePath: null,
+              imageUrl: null,
+              imageFile: null,
+              imagePreviewUrl: null,
+            }}
             onChange={setComponents}
             renderRow={(item, onChangeRow) => (
-              <div className="flex gap-2">
-                <Input
-                  aria-label="Nombre del componente"
-                  className="flex-1"
-                  placeholder="Ej. Sensor de movimiento"
-                  value={item.name}
-                  variant="secondary"
-                  onChange={(e) => onChangeRow({ ...item, name: e.target.value })}
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
+                <ComponentImagePicker
+                  hasImage={Boolean(item.imageFile || item.imagePreviewUrl || item.imageUrl)}
+                  imageUrl={item.imagePreviewUrl ?? item.imageUrl ?? null}
+                  onClear={() => {
+                    if (item.imagePreviewUrl) URL.revokeObjectURL(item.imagePreviewUrl);
+                    onChangeRow({
+                      ...item,
+                      imageFile: null,
+                      imagePreviewUrl: null,
+                      imagePath: null,
+                    });
+                  }}
+                  onSelect={(file) => {
+                    if (item.imagePreviewUrl) URL.revokeObjectURL(item.imagePreviewUrl);
+                    onChangeRow({
+                      ...item,
+                      imageFile: file,
+                      imagePreviewUrl: URL.createObjectURL(file),
+                    });
+                  }}
                 />
-                <Input
-                  aria-label="Categoría del componente"
-                  className="flex-1"
-                  placeholder="Ej. Dispositivo final"
-                  value={item.type}
-                  variant="secondary"
-                  onChange={(e) => onChangeRow({ ...item, type: e.target.value })}
-                />
-                <Input
-                  aria-label="Cantidad sugerida"
-                  className="w-1/4"
-                  placeholder="Ej. 1"
-                  value={item.qty}
-                  variant="secondary"
-                  onChange={(e) => onChangeRow({ ...item, qty: e.target.value })}
-                />
+                <div className="grid flex-1 grid-cols-1 gap-2 sm:grid-cols-3">
+                  <Input
+                    aria-label="Nombre del componente"
+                    placeholder="Ej. Sensor de movimiento"
+                    value={item.name}
+                    variant="secondary"
+                    onChange={(e) => onChangeRow({ ...item, name: e.target.value })}
+                  />
+                  <TextField isRequired>
+                    <Label className="text-xs">Categoría del componente</Label>
+                    <Input
+                      placeholder="Ej. Dispositivo final"
+                      value={item.type}
+                      variant="secondary"
+                      onChange={(e) => onChangeRow({ ...item, type: e.target.value })}
+                    />
+                  </TextField>
+                  <TextField isRequired>
+                    <Label className="text-xs">Cantidad sugerida</Label>
+                    <Input
+                      placeholder="Ej. 1"
+                      value={item.qty}
+                      variant="secondary"
+                      onChange={(e) => onChangeRow({ ...item, qty: e.target.value })}
+                    />
+                  </TextField>
+                </div>
               </div>
             )}
           />
@@ -498,7 +700,11 @@ export function NewSystemForm({ categories }: NewSystemFormProps) {
 
       <div className="flex justify-end gap-3">
         <Button isDisabled={isPending} type="submit" variant="primary">
-          {isPending ? "Guardando..." : "Crear sistema"}
+          {isPending
+            ? "Guardando..."
+            : isEditMode
+              ? "Guardar cambios"
+              : "Crear sistema"}
         </Button>
       </div>
     </form>

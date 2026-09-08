@@ -35,6 +35,7 @@ export type Database = {
       system_components: {
         Row: {
           id: number
+          image_path: string | null
           name: string
           qty: string
           system_id: number
@@ -42,6 +43,7 @@ export type Database = {
         }
         Insert: {
           id?: never
+          image_path?: string | null
           name: string
           qty: string
           system_id: number
@@ -49,6 +51,7 @@ export type Database = {
         }
         Update: {
           id?: never
+          image_path?: string | null
           name?: string
           qty?: string
           system_id?: number

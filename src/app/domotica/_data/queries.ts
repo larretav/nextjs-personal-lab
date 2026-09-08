@@ -3,7 +3,12 @@ import { cache } from "react";
 import { supabase } from "@/src/lib/supabase/client";
 import type { Tables } from "@/src/lib/supabase/database.types";
 
-import type { ComponentItem, DomoticSystem, FeatureItem } from "./types";
+import type {
+  ComponentItem,
+  DomoticSystem,
+  EditableSystemData,
+  FeatureItem,
+} from "./types";
 
 const IMAGES_BUCKET = "system-images";
 
@@ -32,7 +37,12 @@ function mapSystem(
     installation: row.installation,
     investment: row.investment,
     maintenance: row.maintenance,
-    components: components.map((c) => ({ name: c.name, type: c.type, qty: c.qty })),
+    components: components.map((c) => ({
+      name: c.name,
+      type: c.type,
+      qty: c.qty,
+      imageUrl: getImageUrl(c.image_path),
+    })),
   };
 }
 
@@ -95,6 +105,48 @@ export const getSystemBySlug = cache(
       categoryNamesById.get(row.category_id) ?? "",
       componentsResult.data ?? []
     );
+  }
+);
+
+export const getSystemForEdit = cache(
+  async (slug: string): Promise<EditableSystemData | null> => {
+    const { data: row, error } = await supabase
+      .from("systems")
+      .select("*")
+      .eq("slug", slug)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!row) return null;
+
+    const { data: components, error: componentsError } = await supabase
+      .from("system_components")
+      .select("*")
+      .eq("system_id", row.id);
+
+    if (componentsError) throw componentsError;
+
+    return {
+      categoryId: row.category_id,
+      name: row.name,
+      badge: row.badge,
+      imageUrl: getImageUrl(row.image_path),
+      targetAudience: row.target_audience,
+      needsCovered: (row.needs_covered as string[] | null) ?? [],
+      features: (row.features as FeatureItem[] | null) ?? [],
+      loadCapacity: (row.load_capacity as FeatureItem[] | null) ?? [],
+      sitePreparation: (row.site_preparation as string[] | null) ?? [],
+      installation: row.installation,
+      investment: row.investment,
+      maintenance: row.maintenance,
+      components: (components ?? []).map((c) => ({
+        name: c.name,
+        type: c.type,
+        qty: c.qty,
+        imagePath: c.image_path,
+        imageUrl: getImageUrl(c.image_path),
+      })),
+    };
   }
 );
 
