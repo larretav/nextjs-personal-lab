@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import {
   CheckCircle2,
@@ -9,13 +10,16 @@ import {
   HardDrive,
   Info,
   Layers,
+  Pencil,
   ShieldCheck,
   Target,
+  Trash2,
   Wrench,
   Zap,
 } from "lucide-react";
-import { Card, Chip, Tabs } from "@heroui/react";
+import { AlertDialog, Button, buttonVariants, Card, Chip, Tabs } from "@heroui/react";
 
+import { deleteSystem } from "../_actions/deleteSystem";
 import type { DomoticSystem } from "../_data/types";
 
 export interface SystemDetailProps {
@@ -47,15 +51,81 @@ function SectionCard({
 }
 
 export function SystemDetail({ system }: SystemDetailProps) {
+  const [isPending, startTransition] = useTransition();
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const handleDelete = () => {
+    setDeleteError(null);
+
+    startTransition(async () => {
+      const result = await deleteSystem(system.id);
+
+      if (result && !result.ok) {
+        setDeleteError(result.error ?? "No se pudo eliminar el sistema.");
+      }
+    });
+  };
+
   return (
     <div className="flex flex-col gap-5">
-      <Link
-        href="/domotica"
-        className="inline-flex w-fit items-center gap-1 text-sm text-muted transition-colors hover:text-foreground"
-      >
-        <ChevronLeft aria-hidden="true" className="size-4" />
-        Volver al catálogo
-      </Link>
+      <div className="flex items-center justify-between gap-3">
+        <Link
+          href="/domotica"
+          className="inline-flex w-fit items-center gap-1 text-sm text-muted transition-colors hover:text-foreground"
+        >
+          <ChevronLeft aria-hidden="true" className="size-4" />
+          Volver al catálogo
+        </Link>
+
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/domotica/${system.id}/editar`}
+            className={buttonVariants({ size: "sm", variant: "secondary" })}
+          >
+            <Pencil aria-hidden="true" className="size-4" />
+            Editar
+          </Link>
+
+          <AlertDialog>
+            <Button variant="danger" size="sm">
+              <Trash2 aria-hidden="true" className="size-4" />
+              Eliminar
+            </Button>
+
+            <AlertDialog.Backdrop>
+              <AlertDialog.Container>
+                <AlertDialog.Dialog className="sm:max-w-[360px]">
+                  <AlertDialog.Header>
+                    <AlertDialog.Icon status="danger" />
+                    <AlertDialog.Heading>¿Eliminar este sistema?</AlertDialog.Heading>
+                    <p className="mt-1.5 text-sm leading-5 text-muted">
+                      Esta acción no se puede deshacer. Se eliminará &quot;
+                      {system.name}&quot; y sus componentes.
+                    </p>
+                  </AlertDialog.Header>
+                  {deleteError && (
+                    <AlertDialog.Body>
+                      <p className="text-sm text-danger">{deleteError}</p>
+                    </AlertDialog.Body>
+                  )}
+                  <AlertDialog.Footer>
+                    <Button slot="close" variant="secondary">
+                      Cancelar
+                    </Button>
+                    <Button
+                      isDisabled={isPending}
+                      variant="danger"
+                      onPress={handleDelete}
+                    >
+                      {isPending ? "Eliminando..." : "Eliminar"}
+                    </Button>
+                  </AlertDialog.Footer>
+                </AlertDialog.Dialog>
+              </AlertDialog.Container>
+            </AlertDialog.Backdrop>
+          </AlertDialog>
+        </div>
+      </div>
 
       <Card className="w-full rounded-2xl border border-border p-6">
         <Card.Content className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">

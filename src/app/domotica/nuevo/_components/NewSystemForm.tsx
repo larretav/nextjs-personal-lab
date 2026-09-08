@@ -17,11 +17,13 @@ import imageCompression from "browser-image-compression";
 import { ImagePlus, Plus, X } from "lucide-react";
 
 import { createSystem } from "../../_actions/createSystem";
+import { updateSystem } from "../../_actions/updateSystem";
 import { uploadSystemImage } from "../../_actions/uploadSystemImage";
 import {
   INVESTMENT_LEVELS,
   MAINTENANCE_LEVELS,
   type ComponentItem,
+  type EditableSystemData,
   type FeatureItem,
 } from "../../_data/types";
 import type { Tables } from "@/src/lib/supabase/database.types";
@@ -30,6 +32,8 @@ const MAX_IMAGE_SIZE_MB = 1;
 
 export interface NewSystemFormProps {
   categories: Tables<"categories">[];
+  initialData?: EditableSystemData;
+  originalSlug?: string;
 }
 
 function slugify(value: string): string {
@@ -97,29 +101,47 @@ function RepeatingRows<T>({
   );
 }
 
-export function NewSystemForm({ categories }: NewSystemFormProps) {
+export function NewSystemForm({
+  categories,
+  initialData,
+  originalSlug,
+}: NewSystemFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
+  const isEditMode = Boolean(initialData && originalSlug);
+
   const [categoryId, setCategoryId] = useState<number | null>(
-    categories[0]?.id ?? null
+    initialData?.categoryId ?? categories[0]?.id ?? null
   );
-  const [name, setName] = useState("");
-  const [badge, setBadge] = useState("");
-  const [targetAudience, setTargetAudience] = useState("");
-  const [installation, setInstallation] = useState("");
-  const [investment, setInvestment] = useState("");
-  const [maintenance, setMaintenance] = useState("");
-  const [needsCovered, setNeedsCovered] = useState<string[]>([""]);
-  const [sitePreparation, setSitePreparation] = useState<string[]>([""]);
-  const [features, setFeatures] = useState<FeatureItem[]>([{ label: "", value: "" }]);
-  const [loadCapacity, setLoadCapacity] = useState<FeatureItem[]>([
-    { label: "", value: "" },
-  ]);
-  const [components, setComponents] = useState<ComponentItem[]>([
-    { name: "", type: "", qty: "" },
-  ]);
+  const [name, setName] = useState(initialData?.name ?? "");
+  const [badge, setBadge] = useState(initialData?.badge ?? "");
+  const [targetAudience, setTargetAudience] = useState(
+    initialData?.targetAudience ?? ""
+  );
+  const [installation, setInstallation] = useState(initialData?.installation ?? "");
+  const [investment, setInvestment] = useState(initialData?.investment ?? "");
+  const [maintenance, setMaintenance] = useState(initialData?.maintenance ?? "");
+  const [needsCovered, setNeedsCovered] = useState<string[]>(
+    initialData?.needsCovered.length ? initialData.needsCovered : [""]
+  );
+  const [sitePreparation, setSitePreparation] = useState<string[]>(
+    initialData?.sitePreparation.length ? initialData.sitePreparation : [""]
+  );
+  const [features, setFeatures] = useState<FeatureItem[]>(
+    initialData?.features.length ? initialData.features : [{ label: "", value: "" }]
+  );
+  const [loadCapacity, setLoadCapacity] = useState<FeatureItem[]>(
+    initialData?.loadCapacity.length
+      ? initialData.loadCapacity
+      : [{ label: "", value: "" }]
+  );
+  const [components, setComponents] = useState<ComponentItem[]>(
+    initialData?.components.length
+      ? initialData.components
+      : [{ name: "", type: "", qty: "" }]
+  );
 
   const slug = useMemo(() => slugify(name), [name]);
 
@@ -128,6 +150,8 @@ export function NewSystemForm({ categories }: NewSystemFormProps) {
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [isCompressingImage, setIsCompressingImage] = useState(false);
   const [imageError, setImageError] = useState<string | null>(null);
+
+  const displayImageUrl = imagePreviewUrl ?? initialData?.imageUrl ?? null;
 
   useEffect(() => {
     return () => {
@@ -176,7 +200,7 @@ export function NewSystemForm({ categories }: NewSystemFormProps) {
     setError(null);
 
     startTransition(async () => {
-      const result = await createSystem({
+      const payload = {
         slug,
         categoryId: categoryId ?? 0,
         name,
@@ -190,10 +214,20 @@ export function NewSystemForm({ categories }: NewSystemFormProps) {
         features,
         loadCapacity,
         components,
-      });
+      };
+
+      const result =
+        isEditMode && originalSlug
+          ? await updateSystem({ ...payload, originalSlug })
+          : await createSystem(payload);
 
       if (!result.ok) {
-        setError(result.error ?? "No se pudo crear el sistema.");
+        setError(
+          result.error ??
+            (isEditMode
+              ? "No se pudieron guardar los cambios."
+              : "No se pudo crear el sistema.")
+        );
         return;
       }
 
@@ -202,7 +236,7 @@ export function NewSystemForm({ categories }: NewSystemFormProps) {
 
         imageFormData.append("slug", slug);
         imageFormData.append("file", imageFile, imageFile.name);
-        // Best-effort: the system itself was created successfully either way.
+        // Best-effort: the system itself was saved successfully either way.
         await uploadSystemImage(imageFormData);
       }
 
@@ -271,12 +305,12 @@ export function NewSystemForm({ categories }: NewSystemFormProps) {
               onChange={(e) => handleImageSelected(e.target.files?.[0])}
             />
             <div className="flex items-center gap-3">
-              {imagePreviewUrl && (
+              {displayImageUrl && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   alt="Vista previa"
                   className="size-16 shrink-0 rounded-xl border border-border object-cover"
-                  src={imagePreviewUrl}
+                  src={displayImageUrl}
                 />
               )}
               <Button
@@ -288,7 +322,7 @@ export function NewSystemForm({ categories }: NewSystemFormProps) {
                 <ImagePlus aria-hidden="true" className="size-4" />
                 {isCompressingImage
                   ? "Comprimiendo..."
-                  : imageFile
+                  : imageFile || displayImageUrl
                     ? "Cambiar imagen"
                     : "Elegir imagen"}
               </Button>
@@ -498,7 +532,11 @@ export function NewSystemForm({ categories }: NewSystemFormProps) {
 
       <div className="flex justify-end gap-3">
         <Button isDisabled={isPending} type="submit" variant="primary">
-          {isPending ? "Guardando..." : "Crear sistema"}
+          {isPending
+            ? "Guardando..."
+            : isEditMode
+              ? "Guardar cambios"
+              : "Crear sistema"}
         </Button>
       </div>
     </form>
