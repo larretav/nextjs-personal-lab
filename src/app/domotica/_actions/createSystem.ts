@@ -11,6 +11,7 @@ import {
   type ComponentItem,
   type FeatureItem,
 } from "../_data/types";
+import { normalizeComponents } from "./normalizeComponents";
 
 export interface CreateSystemInput {
   slug: string;
@@ -77,9 +78,13 @@ export async function createSystem(
     return { ok: false, error: "Elegí un nivel de mantenimiento válido." };
   }
 
-  const components = input.components
-    .map((c) => ({ name: c.name.trim(), type: c.type.trim(), qty: c.qty.trim() }))
-    .filter((c) => c.name.length > 0 && c.type.length > 0 && c.qty.length > 0);
+  const componentsResult = normalizeComponents(input.components);
+
+  if (!componentsResult.ok) {
+    return { ok: false, error: componentsResult.error };
+  }
+
+  const components = componentsResult.components;
 
   const { data: system, error: insertError } = await supabaseAdmin
     .from("systems")

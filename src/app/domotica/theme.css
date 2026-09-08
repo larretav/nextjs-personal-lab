@@ -7,7 +7,7 @@
  * has to be redeclared here too, scoped the same way.
  */
 .domotica-theme {
-    --accent: #4f46e5;
+    --accent: #e46f20;
     --focus: var(--accent);
     --link: var(--accent);
     --accent-hover: color-mix(in oklab, var(--accent) 90%, var(--accent-foreground) 10%);
@@ -17,7 +17,7 @@
 }
 
 [data-theme="dark"] .domotica-theme {
-    --accent: #818cf8;
+    --accent: #fcb72b;
     --accent-hover: color-mix(in oklab, var(--accent) 90%, var(--accent-foreground) 10%);
     --accent-soft: color-mix(in oklab, var(--accent) 12%, transparent);
     --accent-soft-foreground: color-mix(in oklab, var(--accent) 80%, var(--foreground) 30%);

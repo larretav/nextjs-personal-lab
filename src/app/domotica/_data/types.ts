@@ -10,6 +10,8 @@ export interface ComponentItem {
   name: string;
   type: string;
   qty: string;
+  imagePath?: string | null;
+  imageUrl?: string | null;
 }
 
 export interface DomoticSystem {

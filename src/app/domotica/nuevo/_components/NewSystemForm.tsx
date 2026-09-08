@@ -18,6 +18,7 @@ import { ImagePlus, Plus, X } from "lucide-react";
 
 import { createSystem } from "../../_actions/createSystem";
 import { updateSystem } from "../../_actions/updateSystem";
+import { uploadComponentImage } from "../../_actions/uploadComponentImage";
 import { uploadSystemImage } from "../../_actions/uploadSystemImage";
 import {
   INVESTMENT_LEVELS,
@@ -101,6 +102,98 @@ function RepeatingRows<T>({
   );
 }
 
+interface ComponentRow extends ComponentItem {
+  imageFile?: File | null;
+  imagePreviewUrl?: string | null;
+}
+
+function ComponentImagePicker({
+  imageUrl,
+  hasImage,
+  onSelect,
+  onClear,
+}: {
+  imageUrl: string | null;
+  hasImage: boolean;
+  onSelect: (file: File) => void;
+  onClear: () => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isCompressing, setIsCompressing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleFile = async (file: File | undefined) => {
+    if (!file) return;
+
+    setError(null);
+    setIsCompressing(true);
+
+    try {
+      const compressed = await imageCompression(file, {
+        maxSizeMB: MAX_IMAGE_SIZE_MB,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+      });
+
+      onSelect(compressed);
+    } catch {
+      setError("No se pudo procesar la imagen.");
+    } finally {
+      setIsCompressing(false);
+    }
+  };
+
+  return (
+    <div className="flex shrink-0 flex-col items-center gap-1">
+      <input
+        ref={inputRef}
+        accept="image/jpeg,image/png,image/webp"
+        className="hidden"
+        type="file"
+        onChange={(e) => handleFile(e.target.files?.[0])}
+      />
+      <div className="flex items-center gap-1">
+        {imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            alt=""
+            className="size-10 shrink-0 rounded-lg border border-border object-cover"
+            src={imageUrl}
+          />
+        ) : (
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-dashed border-border text-muted">
+            <ImagePlus aria-hidden="true" className="size-4" />
+          </div>
+        )}
+        <Button
+          aria-label={hasImage ? "Cambiar imagen del componente" : "Elegir imagen del componente"}
+          isDisabled={isCompressing}
+          isIconOnly
+          size="sm"
+          type="button"
+          variant="secondary"
+          onPress={() => inputRef.current?.click()}
+        >
+          <ImagePlus aria-hidden="true" className="size-4" />
+        </Button>
+        {hasImage && (
+          <Button
+            aria-label="Quitar imagen del componente"
+            isIconOnly
+            size="sm"
+            type="button"
+            variant="ghost"
+            onPress={onClear}
+          >
+            <X aria-hidden="true" className="size-4" />
+          </Button>
+        )}
+      </div>
+      {error && <p className="text-[11px] text-danger">{error}</p>}
+    </div>
+  );
+}
+
 export function NewSystemForm({
   categories,
   initialData,
@@ -137,11 +230,22 @@ export function NewSystemForm({
       ? initialData.loadCapacity
       : [{ label: "", value: "" }]
   );
-  const [components, setComponents] = useState<ComponentItem[]>(
+  const [components, setComponents] = useState<ComponentRow[]>(
     initialData?.components.length
-      ? initialData.components
-      : [{ name: "", type: "", qty: "" }]
+      ? initialData.components.map((c) => ({ ...c, imageFile: null, imagePreviewUrl: null }))
+      : [{ name: "", type: "", qty: "", imagePath: null, imageUrl: null, imageFile: null, imagePreviewUrl: null }]
   );
+
+  const componentsRef = useRef(components);
+  componentsRef.current = components;
+
+  useEffect(() => {
+    return () => {
+      for (const component of componentsRef.current) {
+        if (component.imagePreviewUrl) URL.revokeObjectURL(component.imagePreviewUrl);
+      }
+    };
+  }, []);
 
   const slug = useMemo(() => slugify(name), [name]);
 
@@ -200,6 +304,38 @@ export function NewSystemForm({
     setError(null);
 
     startTransition(async () => {
+      const uploadedComponents: ComponentItem[] = [];
+
+      for (const component of components) {
+        let imagePath = component.imagePath ?? null;
+
+        if (component.imageFile) {
+          const componentImageFormData = new FormData();
+
+          componentImageFormData.append(
+            "file",
+            component.imageFile,
+            component.imageFile.name
+          );
+
+          const uploadResult = await uploadComponentImage(componentImageFormData);
+
+          if (!uploadResult.ok || !uploadResult.imagePath) {
+            setError(uploadResult.error ?? "No se pudo subir la imagen de un componente.");
+            return;
+          }
+
+          imagePath = uploadResult.imagePath;
+        }
+
+        uploadedComponents.push({
+          name: component.name,
+          type: component.type,
+          qty: component.qty,
+          imagePath,
+        });
+      }
+
       const payload = {
         slug,
         categoryId: categoryId ?? 0,
@@ -213,7 +349,7 @@ export function NewSystemForm({
         sitePreparation,
         features,
         loadCapacity,
-        components,
+        components: uploadedComponents,
       };
 
       const result =
@@ -496,34 +632,66 @@ export function NewSystemForm({
           <RepeatingRows
             label="Componentes"
             rows={components}
-            emptyRow={{ name: "", type: "", qty: "" }}
+            emptyRow={{
+              name: "",
+              type: "",
+              qty: "",
+              imagePath: null,
+              imageUrl: null,
+              imageFile: null,
+              imagePreviewUrl: null,
+            }}
             onChange={setComponents}
             renderRow={(item, onChangeRow) => (
-              <div className="flex gap-2">
-                <Input
-                  aria-label="Nombre del componente"
-                  className="flex-1"
-                  placeholder="Ej. Sensor de movimiento"
-                  value={item.name}
-                  variant="secondary"
-                  onChange={(e) => onChangeRow({ ...item, name: e.target.value })}
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
+                <ComponentImagePicker
+                  hasImage={Boolean(item.imageFile || item.imagePreviewUrl || item.imageUrl)}
+                  imageUrl={item.imagePreviewUrl ?? item.imageUrl ?? null}
+                  onClear={() => {
+                    if (item.imagePreviewUrl) URL.revokeObjectURL(item.imagePreviewUrl);
+                    onChangeRow({
+                      ...item,
+                      imageFile: null,
+                      imagePreviewUrl: null,
+                      imagePath: null,
+                    });
+                  }}
+                  onSelect={(file) => {
+                    if (item.imagePreviewUrl) URL.revokeObjectURL(item.imagePreviewUrl);
+                    onChangeRow({
+                      ...item,
+                      imageFile: file,
+                      imagePreviewUrl: URL.createObjectURL(file),
+                    });
+                  }}
                 />
-                <Input
-                  aria-label="Categoría del componente"
-                  className="flex-1"
-                  placeholder="Ej. Dispositivo final"
-                  value={item.type}
-                  variant="secondary"
-                  onChange={(e) => onChangeRow({ ...item, type: e.target.value })}
-                />
-                <Input
-                  aria-label="Cantidad sugerida"
-                  className="w-1/4"
-                  placeholder="Ej. 1"
-                  value={item.qty}
-                  variant="secondary"
-                  onChange={(e) => onChangeRow({ ...item, qty: e.target.value })}
-                />
+                <div className="grid flex-1 grid-cols-1 gap-2 sm:grid-cols-3">
+                  <Input
+                    aria-label="Nombre del componente"
+                    placeholder="Ej. Sensor de movimiento"
+                    value={item.name}
+                    variant="secondary"
+                    onChange={(e) => onChangeRow({ ...item, name: e.target.value })}
+                  />
+                  <TextField isRequired>
+                    <Label className="text-xs">Categoría del componente</Label>
+                    <Input
+                      placeholder="Ej. Dispositivo final"
+                      value={item.type}
+                      variant="secondary"
+                      onChange={(e) => onChangeRow({ ...item, type: e.target.value })}
+                    />
+                  </TextField>
+                  <TextField isRequired>
+                    <Label className="text-xs">Cantidad sugerida</Label>
+                    <Input
+                      placeholder="Ej. 1"
+                      value={item.qty}
+                      variant="secondary"
+                      onChange={(e) => onChangeRow({ ...item, qty: e.target.value })}
+                    />
+                  </TextField>
+                </div>
               </div>
             )}
           />

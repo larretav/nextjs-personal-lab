@@ -37,7 +37,12 @@ function mapSystem(
     installation: row.installation,
     investment: row.investment,
     maintenance: row.maintenance,
-    components: components.map((c) => ({ name: c.name, type: c.type, qty: c.qty })),
+    components: components.map((c) => ({
+      name: c.name,
+      type: c.type,
+      qty: c.qty,
+      imageUrl: getImageUrl(c.image_path),
+    })),
   };
 }
 
@@ -138,6 +143,8 @@ export const getSystemForEdit = cache(
         name: c.name,
         type: c.type,
         qty: c.qty,
+        imagePath: c.image_path,
+        imageUrl: getImageUrl(c.image_path),
       })),
     };
   }
