@@ -673,7 +673,7 @@ export function NewSystemForm({
                     variant="secondary"
                     onChange={(e) => onChangeRow({ ...item, name: e.target.value })}
                   />
-                  <TextField isRequired>
+                  <TextField>
                     <Label className="text-xs">Categoría del componente</Label>
                     <Input
                       placeholder="Ej. Dispositivo final"
@@ -682,7 +682,7 @@ export function NewSystemForm({
                       onChange={(e) => onChangeRow({ ...item, type: e.target.value })}
                     />
                   </TextField>
-                  <TextField isRequired>
+                  <TextField>
                     <Label className="text-xs">Cantidad sugerida</Label>
                     <Input
                       placeholder="Ej. 1"

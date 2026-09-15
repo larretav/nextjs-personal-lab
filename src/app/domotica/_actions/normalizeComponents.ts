@@ -19,11 +19,10 @@ export function normalizeComponents(
 
     if (!name && !type && !qty) continue;
 
-    if (!name || !type || !qty) {
+    if (!name) {
       return {
         ok: false,
-        error:
-          "Completá nombre, categoría y cantidad sugerida en cada componente, o dejá la fila vacía.",
+        error: "Completá el nombre de cada componente, o dejá la fila vacía.",
       };
     }
 
